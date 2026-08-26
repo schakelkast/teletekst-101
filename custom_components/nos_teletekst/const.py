@@ -4,7 +4,7 @@ DOMAIN = "nos_teletekst"
 
 # Versie van de meegeleverde kaart. Ophogen bij elke wijziging aan het
 # js-bestand, anders blijven browsers de gecachte versie gebruiken.
-VERSIE = "1.2.0"
+VERSIE = "1.3.0"
 
 # Waar de meegeleverde kaart en het font vandaan komen.
 FRONTEND_URL = "/nos_teletekst_frontend"
@@ -19,11 +19,17 @@ TIMEOUT = 15
 CONF_PAGINAS = "paginas"
 CONF_INTERVAL = "interval"
 CONF_TREFWOORDEN = "trefwoorden"
+CONF_VERKEER = "verkeer"
+CONF_WEGEN = "wegen"
 
 # Standaard alleen de nieuwspagina. Teletekst ververst een paar keer per uur,
 # dus vaker dan dit ophalen levert niets op en belast de NOS onnodig.
 STANDAARD_PAGINAS = ["101"]
 STANDAARD_INTERVAL = 300
+
+# Actuele verkeersinformatie van de ANWB, met subpaginas.
+VERKEER_PAGINA = "730"
+VERKEER_MAX_SUB = 10
 MIN_INTERVAL = 60
 
 # Diensten

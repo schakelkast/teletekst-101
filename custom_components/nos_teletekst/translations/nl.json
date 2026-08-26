@@ -18,10 +18,14 @@
         "data": {
           "paginas": "Pagina's",
           "interval": "Hoe vaak verversen",
-          "trefwoorden": "Trefwoorden"
+          "trefwoorden": "Trefwoorden",
+          "verkeer": "Verkeersinformatie ophalen",
+          "wegen": "Wegen om in de gaten te houden"
         },
         "data_description": {
-          "trefwoorden": "Elk woord krijgt een sensor die aangaat zodra het op een van je gevolgde pagina's staat. Handig om een melding te krijgen bij nieuws over je club, je woonplaats of een onderwerp dat je volgt."
+          "trefwoorden": "Elk woord krijgt een sensor die aangaat zodra het op een van je gevolgde pagina's staat. Handig om een melding te krijgen bij nieuws over je club, je woonplaats of een onderwerp dat je volgt.",
+          "verkeer": "Haalt pagina 730 met alle subpagina's op: files, afsluitingen en omleidingen van de ANWB. Kost zes extra aanvragen per ronde.",
+          "wegen": "Elke weg krijgt een sensor die aangaat zodra er een melding voor staat. Bijvoorbeeld A15, A16, N3."
         }
       }
     },

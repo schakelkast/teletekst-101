@@ -37,6 +37,7 @@ from .api import (
 from .const import (
     CONF_INTERVAL,
     CONF_PAGINAS,
+    CONF_VERKEER,
     DIENST_PAGINA,
     DIENST_ZOEK,
     DOMAIN,
@@ -47,7 +48,7 @@ from .const import (
     STANDAARD_PAGINAS,
     VERSIE,
 )
-from .coordinator import PaginaCoordinator
+from .coordinator import PaginaCoordinator, VerkeerCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -102,7 +103,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await c.async_config_entry_first_refresh()
         coordinators[str(pagina)] = c
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {"coordinators": coordinators}
+    # Verkeersinformatie is optioneel: het kost zes extra aanvragen per ronde.
+    verkeer_c: VerkeerCoordinator | None = None
+    if entry.options.get(CONF_VERKEER):
+        verkeer_c = VerkeerCoordinator(hass, entry, interval)
+        await verkeer_c.async_config_entry_first_refresh()
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
+        "coordinators": coordinators,
+        "verkeer": verkeer_c,
+    }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     _registreer_diensten(hass)

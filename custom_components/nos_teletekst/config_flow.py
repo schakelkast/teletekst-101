@@ -19,6 +19,8 @@ from .const import (
     CONF_INTERVAL,
     CONF_PAGINAS,
     CONF_TREFWOORDEN,
+    CONF_VERKEER,
+    CONF_WEGEN,
     DOMAIN,
     MIN_INTERVAL,
     STANDAARD_INTERVAL,
@@ -83,6 +85,12 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                             for t in user_input.get(CONF_TREFWOORDEN, [])
                             if t.strip()
                         ],
+                        CONF_VERKEER: user_input.get(CONF_VERKEER, False),
+                        CONF_WEGEN: [
+                            w.strip().upper()
+                            for w in user_input.get(CONF_WEGEN, [])
+                            if w.strip()
+                        ],
                     }
                 )
 
@@ -103,6 +111,21 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                 vol.Optional(
                     CONF_TREFWOORDEN,
                     default=list(huidig.get(CONF_TREFWOORDEN, [])),
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[],
+                        multiple=True,
+                        custom_value=True,
+                        mode=selector.SelectSelectorMode.LIST,
+                    )
+                ),
+                vol.Optional(
+                    CONF_VERKEER,
+                    default=huidig.get(CONF_VERKEER, False),
+                ): selector.BooleanSelector(),
+                vol.Optional(
+                    CONF_WEGEN,
+                    default=list(huidig.get(CONF_WEGEN, [])),
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=[],

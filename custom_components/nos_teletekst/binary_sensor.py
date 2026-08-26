@@ -9,15 +9,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import CONF_TREFWOORDEN, DOMAIN
-from .coordinator import PaginaCoordinator
+from .const import CONF_TREFWOORDEN, CONF_WEGEN, DOMAIN
+from .coordinator import PaginaCoordinator, VerkeerCoordinator
 
 
 async def async_setup_entry(
@@ -28,11 +31,19 @@ async def async_setup_entry(
     coordinators: dict[str, PaginaCoordinator] = gegevens["coordinators"]
     trefwoorden = entry.options.get(CONF_TREFWOORDEN) or []
 
-    async_add_entities(
+    entiteiten: list[BinarySensorEntity] = [
         TrefwoordSensor(entry, coordinators, woord)
         for woord in trefwoorden
         if str(woord).strip()
-    )
+    ]
+
+    verkeer_c: VerkeerCoordinator | None = gegevens.get("verkeer")
+    if verkeer_c:
+        for weg in entry.options.get(CONF_WEGEN) or []:
+            if str(weg).strip():
+                entiteiten.append(WegSensor(entry, verkeer_c, str(weg).strip()))
+
+    async_add_entities(entiteiten)
 
 
 class TrefwoordSensor(BinarySensorEntity):
@@ -102,4 +113,53 @@ class TrefwoordSensor(BinarySensorEntity):
             "paginas": [t["pagina"] for t in treffers],
             "regels": [r for t in treffers for r in t["regels"]],
             "treffers": treffers,
+        }
+
+
+class WegSensor(CoordinatorEntity[VerkeerCoordinator], BinarySensorEntity):
+    """Gaat aan zodra er een melding staat voor deze weg."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:road-variant"
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+
+    def __init__(
+        self, entry: ConfigEntry, coordinator: VerkeerCoordinator, weg: str
+    ) -> None:
+        """Koppel de sensor aan een wegnummer, bijvoorbeeld A15."""
+        super().__init__(coordinator)
+        self._weg = weg.upper()
+        self._attr_unique_id = f"{entry.entry_id}_weg_{self._weg.lower()}"
+        self._attr_name = f"Verkeer {self._weg}"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name="NOS Teletekst",
+            manufacturer="NOS",
+            entry_type=DeviceEntryType.SERVICE,
+            configuration_url="https://nos.nl/teletekst",
+        )
+
+    def _mijn_meldingen(self) -> list[dict[str, Any]]:
+        d = self.coordinator.data or {}
+        return [
+            m for m in d.get("meldingen", []) if str(m.get("weg", "")).upper() == self._weg
+        ]
+
+    @property
+    def is_on(self) -> bool:
+        """Staat er iets op deze weg?"""
+        return bool(self._mijn_meldingen())
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Wat er precies aan de hand is, en hoeveel vertraging."""
+        meldingen = self._mijn_meldingen()
+        files = [m for m in meldingen if str(m.get("soort", "")).lower().startswith("file")]
+        return {
+            "weg": self._weg,
+            "aantal_meldingen": len(meldingen),
+            "aantal_files": len(files),
+            "km": sum(int(m["km"]) for m in files if m.get("km")),
+            "minuten": sum(int(m["minuten"]) for m in files if m.get("minuten")),
+            "meldingen": meldingen,
         }

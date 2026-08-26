@@ -45,19 +45,29 @@ actions:
         {{ state_attr('sensor.nos_teletekst_pagina_101', 'tekst') }}
 ```
 
-**De file-informatie checken voordat je vertrekt.** Pagina 730 en verder is
-verkeer; haal hem op wanneer je hem nodig hebt, ook zonder hem te volgen.
+**Weten of het vastloopt op jouw route.** Zet verkeersinformatie aan en geef de
+wegen op die je rijdt. Elke weg krijgt een sensor die aangaat zodra er een
+melding voor staat, met de vertraging erbij — uitgelezen uit de ANWB-pagina's.
 
 ```yaml
+triggers:
+  - trigger: time
+    at: "07:15:00"
+conditions:
+  - condition: state
+    entity_id: binary_sensor.nos_teletekst_verkeer_a15
+    state: "on"
 actions:
-  - action: nos_teletekst.pagina_ophalen
+  - action: notify.mobile_app_telefoon
     data:
-      pagina: "730"
-    response_variable: verkeer
-  - action: notify.persistent_notification
-    data:
-      message: "{{ verkeer.tekst }}"
+      title: "File op de A15"
+      message: >-
+        {{ state_attr('binary_sensor.nos_teletekst_verkeer_a15', 'km') }} km,
+        {{ state_attr('binary_sensor.nos_teletekst_verkeer_a15', 'minuten') }} minuten vertraging.
 ```
+
+Er is ook een `sensor.nos_teletekst_verkeer` met het totale aantal files, de
+opgetelde kilometers en alle meldingen in de attributen.
 
 **Een koppenlijst op je dashboard.** Elke kop komt met het paginanummer waar
 het bericht staat, dus je kunt er doorheen klikken.
@@ -152,6 +162,26 @@ regel; de rest staat in de attributen:
 Elk trefwoord krijgt een `binary_sensor` die aangaat zodra het woord op een van
 je gevolgde pagina's staat, met de gevonden regels in de attributen.
 
+### Verkeer
+
+Zet je verkeersinformatie aan, dan wordt pagina 730 met al zijn subpagina's
+uitgelezen tot losse meldingen. Je krijgt `sensor.nos_teletekst_verkeer` met het
+aantal files als toestand, en in de attributen `totaal_km`, `totaal_minuten`,
+`wegen` en `meldingen`. Elke melding is opgesplitst:
+
+```yaml
+soort: Files            # of Afsluiting/Omleiding
+weg: A12
+van: Duitse grens
+naar: Arnhem
+km: 3
+minuten: 2
+tekst: "A12 Duitse grens->Arnhem tussen knp. Oud-Dijk en Duiven 3 km,2 min., ..."
+```
+
+Geef je wegen op, dan krijgt elke weg een eigen `binary_sensor` met alleen de
+meldingen voor die weg. Bron is de ANWB, via de NOS.
+
 ### Gebeurtenis
 
 `nos_teletekst_pagina_gewijzigd` komt langs zodra een gevolgde pagina
@@ -198,8 +228,8 @@ beschikbaar stelt.
 
 ## Meehelpen, forken en hergebruiken
 
-Verbeteringen zijn welkom — er valt nog genoeg te doen: verkeersinformatie
-netjes uitlezen, een echte ondertitelingsmodus, of gewoon een scherper oog voor
+Verbeteringen zijn welkom — er valt nog genoeg te doen: een echte
+ondertitelingsmodus, beursinformatie uitlezen, of gewoon een scherper oog voor
 waar het beeld nog afwijkt van de uitzending. Zie
 [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -18,10 +18,14 @@
         "data": {
           "paginas": "Pages",
           "interval": "Refresh interval",
-          "trefwoorden": "Keywords"
+          "trefwoorden": "Keywords",
+          "verkeer": "Fetch traffic information",
+          "wegen": "Roads to watch"
         },
         "data_description": {
-          "trefwoorden": "Each word gets a sensor that turns on as soon as it appears on one of your followed pages. Useful for a notification about your team, your town, or any topic you follow."
+          "trefwoorden": "Each word gets a sensor that turns on as soon as it appears on one of your followed pages. Useful for a notification about your team, your town, or any topic you follow.",
+          "verkeer": "Fetches page 730 and all its subpages: jams, closures and diversions from the ANWB. Costs six extra requests per round.",
+          "wegen": "Each road gets a sensor that turns on as soon as there is a report for it. For example A15, A16, N3."
         }
       }
     },

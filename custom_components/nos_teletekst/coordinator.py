@@ -10,9 +10,14 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from . import tekst
+from . import tekst, verkeer
 from .api import PaginaBestaatNiet, TeletekstFout, haal_pagina
-from .const import DOMAIN, EVENEMENT_GEWIJZIGD
+from .const import (
+    DOMAIN,
+    EVENEMENT_GEWIJZIGD,
+    VERKEER_MAX_SUB,
+    VERKEER_PAGINA,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,3 +82,50 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._vorige_tekst = plat
 
         return data
+
+
+class VerkeerCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Haalt de actuele verkeersinformatie op, inclusief alle subpagina's.
+
+    Pagina 730 past niet op een scherm: de ANWB verdeelt de meldingen over een
+    stuk of zes subpagina's. Die worden hier achter elkaar opgehaald en weer tot
+    een lijst samengevoegd.
+    """
+
+    def __init__(
+        self, hass: HomeAssistant, config_entry: ConfigEntry, interval: int
+    ) -> None:
+        """Zet de bijhouder op voor de verkeerspagina's."""
+        super().__init__(
+            hass,
+            _LOGGER,
+            config_entry=config_entry,
+            name="Teletekst verkeer",
+            update_interval=timedelta(seconds=interval),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Loop de subpagina's af en lees de meldingen uit."""
+        regels: list[str] = []
+        pagina: str | None = VERKEER_PAGINA
+        gezien = 0
+
+        while pagina and gezien < VERKEER_MAX_SUB:
+            try:
+                ruw = await haal_pagina(self.hass, pagina)
+            except TeletekstFout as err:
+                if gezien == 0:
+                    raise UpdateFailed(str(err)) from err
+                # Een losse subpagina die hapert mag de rest niet ongeldig maken.
+                _LOGGER.debug("Subpagina %s overgeslagen: %s", pagina, err)
+                break
+            regels += tekst.naar_regels(ruw.get("content") or "")
+            pagina = ruw.get("nextSubPage") or None
+            gezien += 1
+
+        meldingen = verkeer.lees(regels)
+        return {
+            "meldingen": meldingen,
+            "subpaginas": gezien,
+            **verkeer.samenvatting(meldingen),
+        }

@@ -17,19 +17,22 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import PaginaCoordinator
+from .coordinator import PaginaCoordinator, VerkeerCoordinator
 
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Maak een sensor voor elke gevolgde pagina."""
-    coordinators: dict[str, PaginaCoordinator] = hass.data[DOMAIN][entry.entry_id][
-        "coordinators"
-    ]
-    async_add_entities(
+    gegevens = hass.data[DOMAIN][entry.entry_id]
+    coordinators: dict[str, PaginaCoordinator] = gegevens["coordinators"]
+
+    entiteiten: list[SensorEntity] = [
         TeletekstSensor(c, entry) for c in coordinators.values()
-    )
+    ]
+    if gegevens.get("verkeer"):
+        entiteiten.append(VerkeerSensor(gegevens["verkeer"], entry))
+    async_add_entities(entiteiten)
 
 
 class TeletekstSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
@@ -72,4 +75,44 @@ class TeletekstSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
             "vorige_pagina": d.get("vorige_pagina"),
             "volgende_pagina": d.get("volgende_pagina"),
             "volgende_subpagina": d.get("volgende_subpagina"),
+        }
+
+
+class VerkeerSensor(CoordinatorEntity[VerkeerCoordinator], SensorEntity):
+    """Het aantal files volgens de actuele verkeersinformatie."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:traffic-light"
+    _attr_name = "Verkeer"
+    _attr_native_unit_of_measurement = "files"
+    _attr_state_class = "measurement"
+
+    def __init__(self, coordinator: VerkeerCoordinator, entry: ConfigEntry) -> None:
+        """Koppel de sensor aan de verkeerspagina's."""
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{entry.entry_id}_verkeer"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name="NOS Teletekst",
+            manufacturer="NOS",
+            entry_type=DeviceEntryType.SERVICE,
+            configuration_url="https://nos.nl/teletekst",
+        )
+
+    @property
+    def native_value(self) -> int | None:
+        """Hoeveel files er op dit moment staan."""
+        d = self.coordinator.data
+        return d.get("aantal_files") if d else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """De meldingen zelf, plus de optelsom."""
+        d = self.coordinator.data or {}
+        return {
+            "totaal_km": d.get("totaal_km", 0),
+            "totaal_minuten": d.get("totaal_minuten", 0),
+            "wegen": d.get("wegen", []),
+            "meldingen": d.get("meldingen", []),
+            "bron": "ANWB via NOS Teletekst",
         }
