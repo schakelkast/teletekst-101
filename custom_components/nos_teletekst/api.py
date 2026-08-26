@@ -1,8 +1,8 @@
-"""Serverkant ophalen van een teletekstpagina.
+"""Ophalen van teletekstpagina's bij de NOS.
 
 De JSON-API van de NOS stuurt geen CORS-headers, dus de browser mag hem niet
-rechtstreeks aanroepen. Deze view haalt de pagina op vanaf Home Assistant zelf
-en geeft hem door aan de kaart, op hetzelfde adres en achter dezelfde login.
+rechtstreeks aanroepen. Alles loopt daarom via deze module: de kaart via een
+eigen adres, en de sensoren en diensten rechtstreeks.
 """
 
 from __future__ import annotations
@@ -11,24 +11,63 @@ import asyncio
 import logging
 import re
 from http import HTTPStatus
+from typing import Any
 
 from aiohttp import ClientError, web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import API
+from .const import API, TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
 
 # Paginanummer of subpagina, bijvoorbeeld 101 of 100-2.
 PAGINA = re.compile(r"^\d{3}(?:-\d{1,2})?$")
 
-TIMEOUT = 15
+
+class TeletekstFout(Exception):
+    """Ophalen mislukte."""
+
+
+class PaginaBestaatNiet(TeletekstFout):
+    """De NOS kent deze pagina niet."""
+
+
+def geldige_pagina(pagina: str) -> bool:
+    """Controleer of dit een bruikbaar paginanummer is."""
+    return bool(PAGINA.match(str(pagina)))
+
+
+async def haal_pagina(hass: HomeAssistant, pagina: str) -> dict[str, Any]:
+    """Haal één teletekstpagina op.
+
+    Raises:
+        PaginaBestaatNiet: de NOS geeft 404.
+        TeletekstFout: netwerkfout of een onverwacht antwoord.
+    """
+    if not geldige_pagina(pagina):
+        raise TeletekstFout(f"ongeldig paginanummer: {pagina}")
+
+    sessie = async_get_clientsession(hass)
+    try:
+        async with asyncio.timeout(TIMEOUT):
+            antwoord = await sessie.get(
+                API.format(pagina=pagina), headers={"accept": "application/json"}
+            )
+            if antwoord.status == HTTPStatus.NOT_FOUND:
+                raise PaginaBestaatNiet(f"pagina {pagina} bestaat niet")
+            if antwoord.status != HTTPStatus.OK:
+                raise TeletekstFout(f"NOS gaf status {antwoord.status}")
+            return await antwoord.json(content_type=None)
+    except TimeoutError as err:
+        raise TeletekstFout("de NOS reageerde niet op tijd") from err
+    except ClientError as err:
+        raise TeletekstFout(f"de NOS is niet bereikbaar: {err}") from err
 
 
 class TeletekstView(HomeAssistantView):
-    """Geeft een teletekstpagina terug als JSON."""
+    """Geeft een teletekstpagina terug als JSON, voor de kaart."""
 
     url = "/api/nos_teletekst/{pagina}"
     name = "api:nos_teletekst"
@@ -40,35 +79,13 @@ class TeletekstView(HomeAssistantView):
 
     async def get(self, request: web.Request, pagina: str) -> web.Response:
         """Haal de gevraagde pagina op bij de NOS."""
-        if not PAGINA.match(pagina):
-            return self.json(
-                {"fout": "ongeldig paginanummer"}, HTTPStatus.BAD_REQUEST
-            )
-
-        sessie = async_get_clientsession(self.hass)
         try:
-            async with asyncio.timeout(TIMEOUT):
-                antwoord = await sessie.get(
-                    API.format(pagina=pagina), headers={"accept": "application/json"}
-                )
-                if antwoord.status == HTTPStatus.NOT_FOUND:
-                    return self.json(
-                        {"fout": f"pagina {pagina} bestaat niet"}, HTTPStatus.NOT_FOUND
-                    )
-                if antwoord.status != HTTPStatus.OK:
-                    _LOGGER.warning(
-                        "NOS gaf status %s voor pagina %s", antwoord.status, pagina
-                    )
-                    return self.json(
-                        {"fout": f"NOS gaf status {antwoord.status}"},
-                        HTTPStatus.BAD_GATEWAY,
-                    )
-                data = await antwoord.json(content_type=None)
-        except TimeoutError:
-            return self.json({"fout": "de NOS reageerde niet op tijd"}, HTTPStatus.GATEWAY_TIMEOUT)
-        except ClientError as err:
+            data = await haal_pagina(self.hass, pagina)
+        except PaginaBestaatNiet as err:
+            return self.json({"fout": str(err)}, HTTPStatus.NOT_FOUND)
+        except TeletekstFout as err:
             _LOGGER.warning("Ophalen van pagina %s mislukte: %s", pagina, err)
-            return self.json({"fout": "de NOS is niet bereikbaar"}, HTTPStatus.BAD_GATEWAY)
+            return self.json({"fout": str(err)}, HTTPStatus.BAD_GATEWAY)
 
         # De pagina ververst bij de NOS elke paar seconden.
         return self.json(data, headers={"cache-control": "max-age=5"})

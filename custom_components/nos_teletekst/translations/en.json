@@ -9,5 +9,47 @@
     "abort": {
       "already_configured": "NOS Teletekst has already been added."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Which pages do you want to follow?",
+        "description": "Each page gets a sensor. Its state is the first meaningful line; the full text sits in the attributes, ready for a notification or a voice assistant. For example 101 for news, 601 for sport, 702 for weather.",
+        "data": {
+          "paginas": "Pages",
+          "interval": "Refresh interval"
+        }
+      }
+    },
+    "error": {
+      "ongeldige_pagina": "One of the page numbers is not valid. Use three digits, optionally with a subpage: 101 or 100-2.",
+      "geen_paginas": "Pick at least one page."
+    }
+  },
+  "services": {
+    "pagina_ophalen": {
+      "name": "Get page",
+      "description": "Fetches a teletext page as plain text.",
+      "fields": {
+        "pagina": {
+          "name": "Page",
+          "description": "Page number, optionally with a subpage. For example 101 or 100-2."
+        }
+      }
+    },
+    "zoeken": {
+      "name": "Search",
+      "description": "Searches for a word across the given pages.",
+      "fields": {
+        "term": {
+          "name": "Search term",
+          "description": "The word to search for."
+        },
+        "paginas": {
+          "name": "Pages",
+          "description": "The pages to search. Maximum of 30."
+        }
+      }
+    }
   }
 }

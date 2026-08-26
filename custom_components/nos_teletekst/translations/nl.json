@@ -9,5 +9,47 @@
     "abort": {
       "already_configured": "NOS Teletekst is al toegevoegd."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Welke pagina's wil je volgen?",
+        "description": "Elke pagina krijgt een sensor. De toestand is de eerste betekenisvolle regel; de volledige tekst staat in de attributen, klaar voor een melding of een spraakassistent. Bijvoorbeeld 101 voor nieuws, 601 voor sport, 702 voor het weer.",
+        "data": {
+          "paginas": "Pagina's",
+          "interval": "Hoe vaak verversen"
+        }
+      }
+    },
+    "error": {
+      "ongeldige_pagina": "Een paginanummer klopt niet. Gebruik drie cijfers, eventueel met subpagina: 101 of 100-2.",
+      "geen_paginas": "Kies minstens één pagina."
+    }
+  },
+  "services": {
+    "pagina_ophalen": {
+      "name": "Pagina ophalen",
+      "description": "Haalt een teletekstpagina op als platte tekst.",
+      "fields": {
+        "pagina": {
+          "name": "Pagina",
+          "description": "Paginanummer, eventueel met subpagina. Bijvoorbeeld 101 of 100-2."
+        }
+      }
+    },
+    "zoeken": {
+      "name": "Zoeken",
+      "description": "Zoekt een woord in de opgegeven pagina's.",
+      "fields": {
+        "term": {
+          "name": "Zoekterm",
+          "description": "Het woord waarop gezocht wordt."
+        },
+        "paginas": {
+          "name": "Pagina's",
+          "description": "De pagina's die doorzocht worden. Maximaal 30."
+        }
+      }
+    }
   }
 }

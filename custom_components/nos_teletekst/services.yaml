@@ -1,0 +1,38 @@
+pagina_ophalen:
+  name: Pagina ophalen
+  description: >-
+    Haalt een teletekstpagina op en geeft hem terug als platte tekst, bruikbaar
+    in een melding, een sjabloon of een spraakassistent.
+  fields:
+    pagina:
+      name: Pagina
+      description: Paginanummer, eventueel met subpagina. Bijvoorbeeld 101 of 100-2.
+      required: true
+      example: "101"
+      selector:
+        text:
+
+zoeken:
+  name: Zoeken
+  description: >-
+    Zoekt een woord in de opgegeven pagina's en geeft de regels terug waarin het
+    voorkomt. Er worden maximaal 30 pagina's doorzocht; elke pagina is een
+    aparte aanvraag bij de NOS.
+  fields:
+    term:
+      name: Zoekterm
+      description: Het woord waarop gezocht wordt. Hoofdletters maken niet uit.
+      required: true
+      example: Feyenoord
+      selector:
+        text:
+    paginas:
+      name: Pagina's
+      description: De pagina's die doorzocht worden.
+      required: true
+      example: "['101', '102', '103']"
+      selector:
+        select:
+          multiple: true
+          custom_value: true
+          options: []

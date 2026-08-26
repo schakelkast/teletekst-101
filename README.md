@@ -44,6 +44,74 @@ page: "100"
   springt, net als met de afstandsbediening
 - **toetsenbord**: cijfers intikken, pijltjestoetsen bladeren, Esc sluit
 
+## Meer dan een kaart
+
+Teletekst is ook bruikbaar in automatiseringen, meldingen en spraak.
+
+### Sensoren
+
+Bij **Instellingen → Apparaten en diensten → NOS Teletekst → Configureren** kies
+je welke pagina's je wilt volgen. Elke pagina krijgt een sensor:
+
+- **toestand** — de eerste betekenisvolle regel, dus meteen bruikbaar als tekst
+- **`tekst`** — de hele pagina als platte tekst
+- **`regels`** — dezelfde tekst als lijst, regel voor regel
+- **`verwijzingen`** — alle paginanummers waar deze pagina naar doorverwijst
+- **`volgende_pagina`**, **`volgende_subpagina`**
+
+De blokgrafiek wordt daarbij weggelaten. Die tekens zijn beeld, geen tekst — een
+spraakassistent zou er onzin van maken.
+
+```yaml
+# Elke ochtend de koppen van pagina 101 voorlezen
+action: tts.speak
+data:
+  message: "{{ state_attr('sensor.nos_teletekst_pagina_101', 'tekst') }}"
+```
+
+### Gebeurtenis
+
+Zodra een gevolgde pagina inhoudelijk verandert, komt er een gebeurtenis
+`nos_teletekst_pagina_gewijzigd` langs met `pagina`, `kop` en `tekst`. Handig om
+op nieuws te reageren zonder te pollen:
+
+```yaml
+triggers:
+  - trigger: event
+    event_type: nos_teletekst_pagina_gewijzigd
+    event_data:
+      pagina: "101"
+actions:
+  - action: notify.persistent_notification
+    data:
+      message: "{{ trigger.event.data.kop }}"
+```
+
+### Diensten
+
+**`nos_teletekst.pagina_ophalen`** haalt elke pagina op, ook eentje die je niet
+volgt, en geeft hem terug:
+
+```yaml
+action: nos_teletekst.pagina_ophalen
+data:
+  pagina: "702"
+response_variable: weer
+```
+
+**`nos_teletekst.zoeken`** zoekt een woord in de pagina's die je opgeeft:
+
+```yaml
+action: nos_teletekst.zoeken
+data:
+  term: Feyenoord
+  paginas: ["601", "602", "603"]
+response_variable: gevonden
+```
+
+Elke pagina is een aparte aanvraag bij de NOS, dus er worden er maximaal 30
+tegelijk doorzocht.
+
 ## Hoe het werkt
 
 De pagina's komen van `teletekst-data.nos.nl`, dezelfde bron als nos.nl/teletekst.
