@@ -51,7 +51,7 @@ from .coordinator import PaginaCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
 
 # Statische paden en views kunnen maar een keer geregistreerd worden.
 GEREGISTREERD = f"{DOMAIN}_geregistreerd"
@@ -135,6 +135,7 @@ def _registreer_diensten(hass: HomeAssistant) -> None:
             "pagina": pagina,
             "kop": tekst.kop(inhoud),
             "regels": tekst.naar_regels(inhoud),
+            "koppen": tekst.koppen(inhoud),
             "tekst": tekst.naar_tekst(inhoud),
             "verwijzingen": tekst.paginaverwijzingen(inhoud),
             "volgende_pagina": ruw.get("nextPage") or None,

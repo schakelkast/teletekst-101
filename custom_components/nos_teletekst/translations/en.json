@@ -17,7 +17,11 @@
         "description": "Each page gets a sensor. Its state is the first meaningful line; the full text sits in the attributes, ready for a notification or a voice assistant. For example 101 for news, 601 for sport, 702 for weather.",
         "data": {
           "paginas": "Pages",
-          "interval": "Refresh interval"
+          "interval": "Refresh interval",
+          "trefwoorden": "Keywords"
+        },
+        "data_description": {
+          "trefwoorden": "Each word gets a sensor that turns on as soon as it appears on one of your followed pages. Useful for a notification about your team, your town, or any topic you follow."
         }
       }
     },

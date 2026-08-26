@@ -84,6 +84,10 @@ const STIJL = [
   ".knop:not(:disabled):hover { background:#222; }",
   ".scheiding { color:#444; align-self:center; padding-inline:.5em; }",
   ".sublabel { color:#888; align-self:center; }",
+  ".pauze { color:#0ff; }",
+  ".fav { flex-wrap:wrap; }",
+  ".favknop { color:#0ff; padding:.45em .7em; }",
+  ".favknop.aan { background:#00f; color:#fff; }",
   ".nav { color:#fff; flex:0 0 auto; padding-inline:.9em; }",
   ".nummer { flex:0 0 auto; width:5em; text-align:center; background:#000; color:#ff0;",
   "  border:1px solid #444; font-family:inherit; font-size:inherit; padding:.4em 0; }",
@@ -124,7 +128,16 @@ class NosTeletekstKaart extends HTMLElement {
 
   setConfig(config) {
     this._config = Object.assign(
-      { page: "100", refresh: 60, controls: true, max_height: 0, aspect: "auto" },
+      {
+        page: "100",
+        refresh: 60,
+        controls: true,
+        max_height: 0,
+        aspect: "auto",
+        subpages: "auto",
+        subpage_seconds: 8,
+        favorieten: [],
+      },
       config || {}
     );
     this._pagina = String(this._config.page);
@@ -152,6 +165,8 @@ class NosTeletekstKaart extends HTMLElement {
   disconnectedCallback() {
     if (this._timer) clearInterval(this._timer);
     this._timer = null;
+    if (this._subTimer) clearTimeout(this._subTimer);
+    this._subTimer = null;
     if (this._obs) this._obs.disconnect();
     if (this._opResize) window.removeEventListener("resize", this._opResize);
   }
@@ -297,6 +312,28 @@ class NosTeletekstKaart extends HTMLElement {
     if (s > 0) this._timer = setInterval(() => this._haal(true), s * 1000);
   }
 
+  /** Loopt de subpagina's vanzelf door, zoals teletekst op tv doet.
+   *
+   * Blader je zelf met de sub-pijlen, dan stopt het doorlopen: je bent dan zelf
+   * aan het lezen en het is vervelend als het beeld onder je neus wegspringt.
+   * Spring je naar een andere pagina, dan begint het opnieuw.
+   */
+  _planSub() {
+    if (this._subTimer) clearTimeout(this._subTimer);
+    this._subTimer = null;
+    if (this._config.subpages === "off" || this._subPauze) return;
+    const volgende = this._data && this._data.nextSubPage;
+    if (!volgende) return;
+    const s = Math.max(3, Number(this._config.subpage_seconds) || 8);
+    this._subTimer = setTimeout(() => this.ga(volgende, true), s * 1000);
+  }
+
+  /** Het nummer van de subpagina waar we nu staan: 702-3 is subpagina 3. */
+  _subNummer() {
+    const m = String(this._pagina).match(/-(\d+)$/);
+    return m ? Number(m[1]) : 1;
+  }
+
   // ------------------------------------------------------------- ophalen
 
   async _haal(stil) {
@@ -330,9 +367,13 @@ class NosTeletekstKaart extends HTMLElement {
     return String(err);
   }
 
-  ga(pagina) {
+  ga(pagina, automatisch) {
     const p = String(pagina || "").trim();
     if (!p) return;
+    // Naar een andere hoofdpagina springen begint met een schone lei.
+    if (!automatisch && p.split("-")[0] !== String(this._pagina).split("-")[0]) {
+      this._subPauze = false;
+    }
     this._pagina = p;
     this._haal();
   }
@@ -346,6 +387,7 @@ class NosTeletekstKaart extends HTMLElement {
     this._schaal();
     this._tekenBalk();
     this._status(null);
+    this._planSub();
   }
 
   _tekenBalk() {
@@ -357,16 +399,42 @@ class NosTeletekstKaart extends HTMLElement {
     // nog eens herhaald. Alleen wat teletekst niet in beeld heeft staan:
     // bladeren, subpagina's en een invoerveld.
     const sub = d.prevSubPage || d.nextSubPage;
+    const draait = sub && this._config.subpages !== "off";
     const subKnoppen = sub
       ? '<span class="scheiding">&middot;</span>' +
-        '<button class="knop nav" data-ga="' + (d.prevSubPage || "") + '"' +
+        '<button class="knop nav sub" data-sub="' + (d.prevSubPage || "") + '"' +
         (d.prevSubPage ? "" : " disabled") + ' title="vorige subpagina">&#9664;</button>' +
-        '<span class="sublabel">sub</span>' +
-        '<button class="knop nav" data-ga="' + (d.nextSubPage || "") + '"' +
-        (d.nextSubPage ? "" : " disabled") + ' title="volgende subpagina">&#9654;</button>'
+        '<span class="sublabel">sub ' + this._subNummer() + "</span>" +
+        '<button class="knop nav sub" data-sub="' + (d.nextSubPage || "") + '"' +
+        (d.nextSubPage ? "" : " disabled") + ' title="volgende subpagina">&#9654;</button>' +
+        (draait
+          ? '<button class="knop nav pauze" title="' +
+            (this._subPauze ? "subpagina&#39;s weer laten doorlopen" : "subpagina&#39;s stilzetten") +
+            '">' + (this._subPauze ? "&#9654;&#65038;" : "&#9208;&#65038;") + "</button>"
+          : "")
+      : "";
+
+    // Snelknoppen: op een wandpaneel wil je niet elke keer een nummer intikken.
+    const fav = Array.isArray(this._config.favorieten) ? this._config.favorieten : [];
+    const huidigeBasis = String(this._pagina).split("-")[0];
+    const favRij = fav.length
+      ? '<div class="rij fav">' +
+        fav
+          .map(function (f) {
+            const nr = String(f.pagina || f.page || "");
+            const naam = f.naam || f.name || nr;
+            const actief = nr === huidigeBasis ? " aan" : "";
+            return (
+              '<button class="knop favknop' + actief + '" data-ga="' + nr +
+              '" title="pagina ' + nr + '">' + naam + "</button>"
+            );
+          })
+          .join("") +
+        "</div>"
       : "";
 
     this._balk.innerHTML =
+      favRij +
       '<div class="rij">' +
       '<button class="knop nav" data-ga="' + (d.prevPage || "") + '"' +
       (d.prevPage ? "" : " disabled") + ' title="vorige pagina">&#9664;</button>' +
@@ -384,6 +452,22 @@ class NosTeletekstKaart extends HTMLElement {
         self.ga(b.dataset.ga);
       });
     });
+    // Zelf door de subpagina's bladeren betekent: ik lees, laat staan.
+    this._balk.querySelectorAll("button[data-sub]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        self._subPauze = true;
+        self.ga(b.dataset.sub, true);
+      });
+    });
+    const pauzeKnop = this._balk.querySelector(".pauze");
+    if (pauzeKnop) {
+      pauzeKnop.addEventListener("click", function () {
+        self._subPauze = !self._subPauze;
+        self._tekenBalk();
+        self._status(null);
+        self._planSub();
+      });
+    }
     const inv = this._balk.querySelector(".nummer");
     if (inv) {
       inv.addEventListener("keydown", function (e) {

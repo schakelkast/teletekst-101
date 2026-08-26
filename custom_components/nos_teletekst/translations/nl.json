@@ -17,7 +17,11 @@
         "description": "Elke pagina krijgt een sensor. De toestand is de eerste betekenisvolle regel; de volledige tekst staat in de attributen, klaar voor een melding of een spraakassistent. Bijvoorbeeld 101 voor nieuws, 601 voor sport, 702 voor het weer.",
         "data": {
           "paginas": "Pagina's",
-          "interval": "Hoe vaak verversen"
+          "interval": "Hoe vaak verversen",
+          "trefwoorden": "Trefwoorden"
+        },
+        "data_description": {
+          "trefwoorden": "Elk woord krijgt een sensor die aangaat zodra het op een van je gevolgde pagina's staat. Handig om een melding te krijgen bij nieuws over je club, je woonplaats of een onderwerp dat je volgt."
         }
       }
     },

@@ -100,6 +100,42 @@ def kop(content: str) -> str:
     return bruikbaar[0][:250] if bruikbaar else ""
 
 
+# Een kop op een indexpagina eindigt op het paginanummer waar het verhaal
+# staat: "Vrees groot voor veel meer doden... 128" of "Dubbeltwee.. 695/1".
+_MENUREGEL = re.compile(r"\d{3}(?:\s{2,}\S|\s*[/|])")
+_KOP_MET_PAGINA = re.compile(r"^(?P<tekst>.*?)[\s.…]*(?<!\d)(?P<pagina>\d{3})(?:/(?P<sub>\d+))?$")
+
+
+def koppen(content: str) -> list[dict[str, str]]:
+    """De koppen van een indexpagina, met het paginanummer erbij.
+
+    Teletekst zet achter elke kop het nummer van de pagina waar het verhaal
+    staat. Los van elkaar zijn die twee weinig waard; samen kun je er een
+    nieuwslijst mee bouwen die doorklikt naar het bericht.
+    """
+    uit: list[dict[str, str]] = []
+    for regel in naar_regels(content):
+        if regel.lower().startswith("nos teletekst") or _is_banner(regel):
+            continue
+        m = _KOP_MET_PAGINA.match(regel)
+        if not m:
+            continue
+        kop_tekst = m.group("tekst").strip(" .…")
+        # Een los paginanummer of een flintertje is geen kop.
+        if len(kop_tekst) < 8:
+            continue
+        # Menuregels staan in twee kolommen: "nieuws     101   sport   600".
+        # Daar hoort het eerste nummer bij het eerste woord, niet bij de regel
+        # als geheel. Een echte kop heeft zo'n gat niet.
+        if _MENUREGEL.search(kop_tekst):
+            continue
+        pagina = m.group("pagina")
+        if m.group("sub"):
+            pagina = f"{pagina}-{m.group('sub')}"
+        uit.append({"tekst": kop_tekst, "pagina": pagina})
+    return uit
+
+
 def paginaverwijzingen(content: str) -> list[str]:
     """Alle paginanummers waar deze pagina naar doorverwijst."""
     return sorted({m for m in re.findall(r'href="#(\d{3}(?:-\d+)?)"', content or "")})

@@ -4,7 +4,7 @@ DOMAIN = "nos_teletekst"
 
 # Versie van de meegeleverde kaart. Ophogen bij elke wijziging aan het
 # js-bestand, anders blijven browsers de gecachte versie gebruiken.
-VERSIE = "1.1.0"
+VERSIE = "1.2.0"
 
 # Waar de meegeleverde kaart en het font vandaan komen.
 FRONTEND_URL = "/nos_teletekst_frontend"
@@ -18,6 +18,7 @@ TIMEOUT = 15
 # Instellingen
 CONF_PAGINAS = "paginas"
 CONF_INTERVAL = "interval"
+CONF_TREFWOORDEN = "trefwoorden"
 
 # Standaard alleen de nieuwspagina. Teletekst ververst een paar keer per uur,
 # dus vaker dan dit ophalen levert niets op en belast de NOS onnodig.

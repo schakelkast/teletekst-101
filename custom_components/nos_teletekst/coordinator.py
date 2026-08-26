@@ -56,6 +56,7 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "pagina": self.pagina,
             "kop": tekst.kop(inhoud),
             "regels": tekst.naar_regels(inhoud),
+            "koppen": tekst.koppen(inhoud),
             "tekst": plat,
             "verwijzingen": tekst.paginaverwijzingen(inhoud),
             "vorige_pagina": ruw.get("prevPage") or None,

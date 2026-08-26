@@ -18,6 +18,7 @@ from .api import geldige_pagina
 from .const import (
     CONF_INTERVAL,
     CONF_PAGINAS,
+    CONF_TREFWOORDEN,
     DOMAIN,
     MIN_INTERVAL,
     STANDAARD_INTERVAL,
@@ -77,6 +78,11 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                     data={
                         CONF_PAGINAS: paginas,
                         CONF_INTERVAL: user_input[CONF_INTERVAL],
+                        CONF_TREFWOORDEN: [
+                            t.strip()
+                            for t in user_input.get(CONF_TREFWOORDEN, [])
+                            if t.strip()
+                        ],
                     }
                 )
 
@@ -86,6 +92,17 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                 vol.Required(
                     CONF_PAGINAS,
                     default=list(huidig.get(CONF_PAGINAS, STANDAARD_PAGINAS)),
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[],
+                        multiple=True,
+                        custom_value=True,
+                        mode=selector.SelectSelectorMode.LIST,
+                    )
+                ),
+                vol.Optional(
+                    CONF_TREFWOORDEN,
+                    default=list(huidig.get(CONF_TREFWOORDEN, [])),
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=[],

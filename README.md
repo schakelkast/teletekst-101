@@ -1,15 +1,83 @@
 # NOS Teletekst voor Home Assistant
 
-Teletekst in Home Assistant, zoals het op tv en op nos.nl staat: 40×24 tekens,
-blokgrafiek, de acht teletekstkleuren. Werkt op telefoon, tablet, breed scherm
-en wandpaneel, en is met de vinger te bedienen.
+Teletekst in Home Assistant, zoals het op tv staat: 40×24 tekens, blokgrafiek,
+de acht teletekstkleuren. En omdat het gewoon entiteiten zijn, kun je er ook
+mee automatiseren.
+
+![Teletekst in Home Assistant](images/teletekst-kaart.png)
+
+## Wat je ermee kunt
+
+**Een melding als er nieuws is over jouw onderwerp.** Geef trefwoorden op — je
+club, je woonplaats, een dossier dat je volgt — en er komt een sensor per woord
+die aangaat zodra het op een gevolgde pagina verschijnt.
+
+```yaml
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.nos_teletekst_trefwoord_feyenoord
+    to: "on"
+actions:
+  - action: notify.mobile_app_telefoon
+    data:
+      title: Teletekst
+      message: "{{ state_attr(trigger.entity_id, 'regels') | join(' — ') }}"
+```
+
+**Het nieuws voorlezen bij je ochtendroutine.** De volledige pagina staat als
+platte tekst klaar, zonder blokgrafiek, dus een spraakassistent maakt er geen
+onzin van.
+
+```yaml
+actions:
+  - action: tts.speak
+    target:
+      entity_id: tts.google
+    data:
+      media_player_entity_id: media_player.keuken
+      message: >-
+        Goedemorgen. Het nieuws van teletekst:
+        {{ state_attr('sensor.nos_teletekst_pagina_101', 'tekst') }}
+```
+
+**De file-informatie checken voordat je vertrekt.** Pagina 730 en verder is
+verkeer; haal hem op wanneer je hem nodig hebt, ook zonder hem te volgen.
+
+```yaml
+actions:
+  - action: nos_teletekst.pagina_ophalen
+    data:
+      pagina: "730"
+    response_variable: verkeer
+  - action: notify.persistent_notification
+    data:
+      message: "{{ verkeer.tekst }}"
+```
+
+**Een koppenlijst op je dashboard.** Elke kop komt met het paginanummer waar
+het bericht staat, dus je kunt er doorheen klikken.
+
+```jinja
+{% for k in state_attr('sensor.nos_teletekst_pagina_101', 'koppen') %}
+- {{ k.tekst }} ({{ k.pagina }})
+{% endfor %}
+```
+
+**En gewoon: teletekst kijken.** Op je telefoon, je tablet of een wandpaneel.
+Subpagina's lopen vanzelf door, net als op tv.
+
+<p>
+  <img src="images/teletekst-wandpaneel.png" width="300" alt="Op een wandpaneel">
+  <img src="images/teletekst-cijferblok.png" width="200" alt="Cijferblok voor aanraakbediening">
+</p>
 
 ## Installatie
 
 **Via HACS** — open HACS, kies rechtsboven *Custom repositories*, plak
-`https://github.com/schakelkast/teletekst-101` en kies type *Integration*. Installeer daarna *NOS Teletekst* en
-herstart Home Assistant. Ga vervolgens naar **Instellingen → Apparaten en
-diensten → Integratie toevoegen** en kies *NOS Teletekst*.
+`https://github.com/schakelkast/teletekst-101` en kies type *Integration*.
+Installeer daarna *NOS Teletekst* en herstart Home Assistant. Ga vervolgens naar
+**Instellingen → Apparaten en diensten → Integratie toevoegen** en kies
+*NOS Teletekst*.
 
 **Handmatig** — kopieer `custom_components/nos_teletekst` naar je
 `config/custom_components/`, herstart, en voeg de integratie toe.
@@ -17,23 +85,33 @@ diensten → Integratie toevoegen** en kies *NOS Teletekst*.
 Er hoeft niets in `configuration.yaml` en er hoeft geen Lovelace-resource
 toegevoegd te worden: de integratie regelt dat zelf.
 
-## Gebruik
+## De kaart
 
 Voeg de kaart **NOS Teletekst** toe aan een dashboard, of met de hand:
 
 ```yaml
 type: custom:nos-teletekst-card
-page: "100"
+page: "101"
+favorieten:
+  - naam: Nieuws
+    pagina: "101"
+  - naam: Sport
+    pagina: "601"
+  - naam: Weer
+    pagina: "702"
+  - naam: Verkeer
+    pagina: "730"
 ```
-
-### Opties
 
 | optie | standaard | betekenis |
 |---|---|---|
 | `page` | `"100"` | beginpagina, subpagina mag ook: `100-2` |
 | `refresh` | `60` | seconden tussen automatisch verversen, `0` zet het uit |
 | `controls` | `true` | knoppenbalk onder of naast de pagina |
-| `aspect` | `"auto"` | `web` = smal zoals nos.nl, `tv` = breed zoals 4:3, `auto` = past zich aan |
+| `favorieten` | `[]` | snelknoppen, elk met `naam` en `pagina` |
+| `subpages` | `"auto"` | subpagina's vanzelf doorlopen, `"off"` zet het uit |
+| `subpage_seconds` | `8` | hoe lang een subpagina blijft staan |
+| `aspect` | `"auto"` | `web` = smal zoals nos.nl, `tv` = breed zoals 4:3 |
 | `max_height` | `0` | vaste maximumhoogte in pixels, `0` = zelf de ruimte meten |
 
 ### Bedienen
@@ -44,83 +122,57 @@ page: "100"
   springt, net als met de afstandsbediening
 - **toetsenbord**: cijfers intikken, pijltjestoetsen bladeren, Esc sluit
 
-## Meer dan een kaart
+Blader je zelf door de subpagina's, dan stopt het automatisch doorlopen — je
+bent dan aan het lezen, en dan is het vervelend als het beeld wegspringt. Met de
+pauzeknop zet je het weer aan.
 
-Teletekst is ook bruikbaar in automatiseringen, meldingen en spraak.
+## Entiteiten, diensten en gebeurtenissen
+
+Bij **Configureren** kies je welke pagina's je volgt, hoe vaak ze ververst
+worden en op welke trefwoorden gelet wordt.
 
 ### Sensoren
 
-Bij **Instellingen → Apparaten en diensten → NOS Teletekst → Configureren** kies
-je welke pagina's je wilt volgen. Elke pagina krijgt een sensor:
+Elke gevolgde pagina krijgt een sensor. De toestand is de eerste betekenisvolle
+regel; de rest staat in de attributen:
 
-- **toestand** — de eerste betekenisvolle regel, dus meteen bruikbaar als tekst
-- **`tekst`** — de hele pagina als platte tekst
-- **`regels`** — dezelfde tekst als lijst, regel voor regel
-- **`verwijzingen`** — alle paginanummers waar deze pagina naar doorverwijst
-- **`volgende_pagina`**, **`volgende_subpagina`**
+| attribuut | inhoud |
+|---|---|
+| `tekst` | de hele pagina als platte tekst |
+| `regels` | dezelfde tekst als lijst |
+| `koppen` | koppen met het paginanummer erbij: `[{tekst, pagina}]` |
+| `verwijzingen` | alle paginanummers waar deze pagina naar doorverwijst |
+| `volgende_pagina`, `volgende_subpagina` | om doorheen te bladeren |
 
-De blokgrafiek wordt daarbij weggelaten. Die tekens zijn beeld, geen tekst — een
-spraakassistent zou er onzin van maken.
-
-```yaml
-# Elke ochtend de koppen van pagina 101 voorlezen
-action: tts.speak
-data:
-  message: "{{ state_attr('sensor.nos_teletekst_pagina_101', 'tekst') }}"
-```
+Elk trefwoord krijgt een `binary_sensor` die aangaat zodra het woord op een van
+je gevolgde pagina's staat, met de gevonden regels in de attributen.
 
 ### Gebeurtenis
 
-Zodra een gevolgde pagina inhoudelijk verandert, komt er een gebeurtenis
-`nos_teletekst_pagina_gewijzigd` langs met `pagina`, `kop` en `tekst`. Handig om
-op nieuws te reageren zonder te pollen:
-
-```yaml
-triggers:
-  - trigger: event
-    event_type: nos_teletekst_pagina_gewijzigd
-    event_data:
-      pagina: "101"
-actions:
-  - action: notify.persistent_notification
-    data:
-      message: "{{ trigger.event.data.kop }}"
-```
+`nos_teletekst_pagina_gewijzigd` komt langs zodra een gevolgde pagina
+inhoudelijk verandert, met `pagina`, `kop` en `tekst`.
 
 ### Diensten
 
 **`nos_teletekst.pagina_ophalen`** haalt elke pagina op, ook eentje die je niet
-volgt, en geeft hem terug:
+volgt, en geeft hem terug als tekst, regels en koppen.
 
-```yaml
-action: nos_teletekst.pagina_ophalen
-data:
-  pagina: "702"
-response_variable: weer
-```
-
-**`nos_teletekst.zoeken`** zoekt een woord in de pagina's die je opgeeft:
-
-```yaml
-action: nos_teletekst.zoeken
-data:
-  term: Feyenoord
-  paginas: ["601", "602", "603"]
-response_variable: gevonden
-```
-
-Elke pagina is een aparte aanvraag bij de NOS, dus er worden er maximaal 30
-tegelijk doorzocht.
+**`nos_teletekst.zoeken`** zoekt een woord in de pagina's die je opgeeft. Elke
+pagina is een aparte aanvraag bij de NOS, dus er worden er maximaal 30 tegelijk
+doorzocht.
 
 ## Hoe het werkt
 
-De pagina's komen van `teletekst-data.nos.nl`, dezelfde bron als nos.nl/teletekst.
-Die API stuurt geen CORS-headers, dus de browser mag hem niet rechtstreeks
-aanroepen. De integratie haalt de pagina daarom op vanaf Home Assistant zelf en
-biedt hem aan op `/api/nos_teletekst/<pagina>`, achter je gewone login.
+De pagina's komen van `teletekst-data.nos.nl`, dezelfde bron als
+nos.nl/teletekst. Die API stuurt geen CORS-headers, dus de browser mag hem niet
+rechtstreeks aanroepen. De integratie haalt de pagina daarom op vanaf Home
+Assistant zelf en biedt hem aan op `/api/nos_teletekst/<pagina>`, achter je
+gewone login.
 
 De blokgrafiek zit in het teletekstfont van de NOS (Android VeraMono), dat
-meegeleverd wordt en lokaal geserveerd — geen verbinding met een CDN.
+meegeleverd wordt en lokaal geserveerd — geen verbinding met een CDN. Bij het
+omzetten naar platte tekst worden die tekens (F020–F07F) vervangen door spaties:
+het zijn tekeningen, geen letters.
 
 Een teken-cel is op nos.nl 0,602 × 1,204 em, dus smal en hoog. Op tv staat
 teletekst op een 4:3-beeld en zijn de tekens duidelijk breder. De kaart meet de
@@ -141,9 +193,13 @@ beschikbaar stelt.
 
 ## Meehelpen, forken en hergebruiken
 
-Verbeteringen zijn welkom — er valt nog genoeg te doen: meer paginasoorten netjes
-tonen, een echte ondertitelingsmodus, of gewoon een scherper oog voor waar het
-beeld nog afwijkt van de uitzending. Zie [CONTRIBUTING.md](CONTRIBUTING.md).
+Verbeteringen zijn welkom — er valt nog genoeg te doen: verkeersinformatie
+netjes uitlezen, een echte ondertitelingsmodus, of gewoon een scherper oog voor
+waar het beeld nog afwijkt van de uitzending. Zie
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+Er staan tests bij (`python -m pytest tests -q`), zodat je kunt zien of je
+wijziging iets breekt voordat je hem instuurt.
 
 **Klonen en zelf verder bouwen mag, graag zelfs.** De code staat onder de
 [MIT-licentie](LICENSE): je mag hem kopiëren, aanpassen, verspreiden en er zelfs
