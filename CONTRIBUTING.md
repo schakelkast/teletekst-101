@@ -37,3 +37,12 @@ je herlaadt.
 ## Taal
 Code en commentaar zijn Nederlands, net als teletekst zelf. Houd dat aan, dan
 blijft het een geheel.
+
+## Forken
+Een eigen fork maken en die kant op verder bouwen mag zonder te vragen. De
+MIT-licentie stelt één harde voorwaarde: het `LICENSE`-bestand met de
+copyrightvermelding blijft in je kopie staan. En noem het origineel even in je
+README — dat kost een regel en houdt zichtbaar waar het vandaan komt.
+
+Werkt je verbetering? Doe er een pull request van. Een fork die stilletjes beter
+is dan het origineel helpt de volgende persoon niet.

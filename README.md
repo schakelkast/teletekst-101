@@ -64,8 +64,23 @@ op — smal op een telefoon, breed op een groot scherm, en nooit breder dan tv.
 Aan de NOS, die teletekst al sinds 1980 uitzendt en de pagina's ook als JSON
 beschikbaar stelt.
 
-## Meehelpen
+## Meehelpen, forken en hergebruiken
 
-Zie [CONTRIBUTING.md](CONTRIBUTING.md). Verbeteringen zijn welkom — er valt nog
-genoeg te doen: meer paginasoorten netjes tonen, een echte ondertitelingsmodus,
-of gewoon een scherper oog voor waar het beeld nog afwijkt van de uitzending.
+Verbeteringen zijn welkom — er valt nog genoeg te doen: meer paginasoorten netjes
+tonen, een echte ondertitelingsmodus, of gewoon een scherper oog voor waar het
+beeld nog afwijkt van de uitzending. Zie [CONTRIBUTING.md](CONTRIBUTING.md).
+
+**Klonen en zelf verder bouwen mag, graag zelfs.** Deze code staat onder de
+[MIT-licentie](LICENSE): je mag hem kopiëren, aanpassen, verspreiden en er zelfs
+iets mee verdienen. Daar staat één voorwaarde tegenover, en die is niet
+vrijblijvend — de licentie verplicht het:
+
+> Houd het bestand `LICENSE` met de copyrightvermelding in je kopie.
+
+Verder een vriendelijk verzoek, geen eis: **noem het origineel**. Een regel in je
+README met een link terug naar deze repository is genoeg. Zo kunnen mensen zien
+waar het vandaan komt, en komen verbeteringen die jij bedenkt makkelijker weer
+hier terug.
+
+Heb je iets werkends gemaakt? Stuur een pull request. Dan heeft iedereen er wat
+aan in plaats van dat het in een losse fork blijft hangen.
