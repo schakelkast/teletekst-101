@@ -8,10 +8,10 @@
     "frontend",
     "lovelace"
   ],
-  "documentation": "https://github.com/JOUW-GITHUB-NAAM/teletekst-101",
+  "documentation": "https://github.com/schakelkast/teletekst-101",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/JOUW-GITHUB-NAAM/teletekst-101/issues",
+  "issue_tracker": "https://github.com/schakelkast/teletekst-101/issues",
   "requirements": [],
   "version": "1.0.1"
 }

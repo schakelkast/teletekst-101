@@ -9,8 +9,8 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-grep -rl "JOUW-GITHUB-NAAM" . --exclude-dir=.git \
-  | xargs sed -i "s|JOUW-GITHUB-NAAM|$1|g"
+grep -rl "schakelkast" . --exclude-dir=.git \
+  | xargs sed -i "s|schakelkast|$1|g"
 
 echo "Klaar. Gezet op: github.com/$1/teletekst-101"
 grep -r "github.com/$1" custom_components/nos_teletekst/manifest.json

@@ -7,7 +7,7 @@ en wandpaneel, en is met de vinger te bedienen.
 ## Installatie
 
 **Via HACS** — open HACS, kies rechtsboven *Custom repositories*, plak
-`https://github.com/JOUW-GITHUB-NAAM/teletekst-101` en kies type *Integration*. Installeer daarna *NOS Teletekst* en
+`https://github.com/schakelkast/teletekst-101` en kies type *Integration*. Installeer daarna *NOS Teletekst* en
 herstart Home Assistant. Ga vervolgens naar **Instellingen → Apparaten en
 diensten → Integratie toevoegen** en kies *NOS Teletekst*.
 
