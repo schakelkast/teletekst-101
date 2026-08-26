@@ -1,5 +1,10 @@
 # NOS Teletekst voor Home Assistant
 
+[![HACS: custom](https://img.shields.io/badge/HACS-custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
+[![Release](https://img.shields.io/github/v/release/schakelkast/teletekst-101)](https://github.com/schakelkast/teletekst-101/releases)
+[![Validatie](https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml/badge.svg)](https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml)
+[![Licentie: MIT](https://img.shields.io/badge/licentie-MIT-green.svg)](LICENSE)
+
 Teletekst in Home Assistant, zoals het op tv staat: 40×24 tekens, blokgrafiek,
 de acht teletekstkleuren. En omdat het gewoon entiteiten zijn, kun je er ook
 mee automatiseren.
