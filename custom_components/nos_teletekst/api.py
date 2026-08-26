@@ -18,6 +18,7 @@ from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+from . import tekst as tekstmodule
 from .const import API, TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
@@ -86,6 +87,14 @@ class TeletekstView(HomeAssistantView):
         except TeletekstFout as err:
             _LOGGER.warning("Ophalen van pagina %s mislukte: %s", pagina, err)
             return self.json({"fout": str(err)}, HTTPStatus.BAD_GATEWAY)
+
+        # De kaart tekent de pagina uit `content`, maar de koppenlijst wil
+        # leesbare tekst. Die wordt hier meteen meegestuurd, zodat er niet nog
+        # een tweede omzetting in javascript hoeft te bestaan.
+        inhoud = data.get("content") or ""
+        data["tekst"] = tekstmodule.naar_tekst(inhoud)
+        data["regels"] = tekstmodule.naar_regels(inhoud)
+        data["koppen"] = tekstmodule.koppen(inhoud)
 
         # De pagina ververst bij de NOS elke paar seconden.
         return self.json(data, headers={"cache-control": "max-age=5"})
