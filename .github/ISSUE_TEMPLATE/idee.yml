@@ -1,0 +1,17 @@
+name: Idee of verzoek
+description: Een functie die je mist
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: Wat zou je willen kunnen?
+      description: Beschrijf liever wat je wilt bereiken dan hoe het gebouwd moet worden.
+    validations:
+      required: true
+  - type: input
+    id: pagina
+    attributes:
+      label: Welke teletekstpagina hoort erbij?
+      description: Als je idee over een specifieke pagina gaat.
+      placeholder: "888"

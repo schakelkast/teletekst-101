@@ -1,0 +1,50 @@
+name: Probleem melden
+description: Er gaat iets mis met de integratie of de kaart
+labels: ["bug"]
+body:
+  - type: textarea
+    id: wat
+    attributes:
+      label: Wat gaat er mis?
+      description: Wat gebeurde er, en wat verwachtte je?
+    validations:
+      required: true
+  - type: input
+    id: pagina
+    attributes:
+      label: Om welke teletekstpagina gaat het?
+      placeholder: "101"
+  - type: input
+    id: versie
+    attributes:
+      label: Welke versie van deze integratie?
+      description: Te zien in HACS of in Instellingen → Apparaten en diensten.
+      placeholder: "1.4.0"
+    validations:
+      required: true
+  - type: input
+    id: ha
+    attributes:
+      label: Welke versie van Home Assistant?
+      placeholder: "2026.8.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: waar
+    attributes:
+      label: Waar zie je het?
+      multiple: true
+      options:
+        - Op een telefoon
+        - Op een tablet of wandpaneel
+        - Op een computer
+        - In een automatisering of sjabloon
+  - type: textarea
+    id: log
+    attributes:
+      label: Logregels
+      description: >-
+        Instellingen → Systeem → Logboek, zoek op nos_teletekst. Diagnostiek
+        downloaden mag ook: die zit op de pagina van de integratie en bevat geen
+        persoonlijke gegevens.
+      render: shell

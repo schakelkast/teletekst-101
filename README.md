@@ -78,6 +78,23 @@ het bericht staat, dus je kunt er doorheen klikken.
 {% endfor %}
 ```
 
+**Teletekst laten voorlezen door Assist.** Vraag het gewoon; er is geen extra
+instelling voor nodig.
+
+```yaml
+triggers:
+  - trigger: conversation
+    command:
+      - "wat staat er op teletekst"
+      - "lees het nieuws voor"
+actions:
+  - action: nos_teletekst.pagina_ophalen
+    data:
+      pagina: "101"
+    response_variable: pagina
+  - set_conversation_response: "{{ pagina.kop }}"
+```
+
 **En gewoon: teletekst kijken.** Op je telefoon, je tablet of een wandpaneel.
 Subpagina's lopen vanzelf door, net als op tv.
 
@@ -100,7 +117,22 @@ Installeer daarna *NOS Teletekst* en herstart Home Assistant. Ga vervolgens naar
 Er hoeft niets in `configuration.yaml` en er hoeft geen Lovelace-resource
 toegevoegd te worden: de integratie regelt dat zelf.
 
-## De kaart
+## De kaarten
+
+Er zijn er twee. **NOS Teletekst** geeft de pagina zoals hij uitgezonden wordt.
+**NOS Teletekst koppen** geeft dezelfde inhoud als leeslijst — prettiger op een
+telefoon:
+
+```yaml
+type: custom:nos-teletekst-koppen-card
+entity: sensor.nos_teletekst_pagina_101
+```
+
+Tik je op een kop, dan wordt dat bericht opgehaald en uitgeklapt. De lijst komt
+uit het `koppen`-attribuut van de sensor, dus kies een overzichtspagina zoals
+101 of 601.
+
+### De teletekstkaart
 
 Voeg de kaart **NOS Teletekst** toe aan een dashboard, of met de hand:
 

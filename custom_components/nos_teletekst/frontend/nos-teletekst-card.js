@@ -615,11 +615,178 @@ class NosTeletekstKaart extends HTMLElement {
 
 customElements.define("nos-teletekst-card", NosTeletekstKaart);
 
+/* ==========================================================================
+ * Koppenlijst
+ *
+ * De teletekstkaart geeft de pagina zoals hij uitgezonden wordt. Op een
+ * telefoon lees je liever een lijst: kop voor kop, met het bericht dat
+ * openklapt als je erop tikt.
+ * ========================================================================== */
+
+const LIJST_STIJL = [
+  ":host { display:block; }",
+  ".lijst-kop { display:flex; align-items:baseline; gap:.6em; padding:0 4px 8px; }",
+  ".lijst-kop h2 { margin:0; font-size:1.05rem; font-weight:600; }",
+  ".lijst-kop .bron { color:var(--secondary-text-color); font-size:.8rem; }",
+  "ul { list-style:none; margin:0; padding:0; }",
+  "li + li { border-top:1px solid var(--divider-color); }",
+  "button.kop {",
+  "  width:100%; text-align:left; background:none; border:none; cursor:pointer;",
+  "  color:var(--primary-text-color); font:inherit; padding:12px 4px;",
+  "  display:flex; gap:.75em; align-items:baseline; }",
+  "button.kop:hover { background:var(--secondary-background-color); }",
+  ".nr { color:var(--primary-color); font-variant-numeric:tabular-nums; font-size:.85em; }",
+  ".titel { flex:1; }",
+  ".bericht { padding:4px 4px 14px; white-space:pre-wrap; line-height:1.45;",
+  "  color:var(--primary-text-color); }",
+  ".terug { background:none; border:none; color:var(--primary-color); cursor:pointer;",
+  "  font:inherit; padding:8px 4px; }",
+  ".leeg { color:var(--secondary-text-color); padding:12px 4px; }",
+].join("\n");
+
+class NosTeletekstKoppen extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this._open = null;
+  }
+
+  static getStubConfig(hass) {
+    const sensor = Object.keys(hass.states).find((e) =>
+      e.startsWith("sensor.nos_teletekst_pagina_")
+    );
+    return { entity: sensor || "sensor.nos_teletekst_pagina_101" };
+  }
+
+  setConfig(config) {
+    if (!config || !config.entity) {
+      throw new Error("Kies een teletekst-sensor met het veld 'entity'.");
+    }
+    this._config = Object.assign({ titel: "" }, config);
+    this.shadowRoot.innerHTML = "<ha-card><div class='vak'></div></ha-card>";
+    const st = document.createElement("style");
+    st.textContent = LIJST_STIJL;
+    this.shadowRoot.appendChild(st);
+    this._vak = this.shadowRoot.querySelector(".vak");
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._teken();
+  }
+
+  getCardSize() {
+    const n = (this._koppen() || []).length;
+    return Math.min(12, 2 + Math.ceil(n / 2));
+  }
+
+  _sensor() {
+    return this._hass && this._hass.states[this._config.entity];
+  }
+
+  _koppen() {
+    const s = this._sensor();
+    return (s && s.attributes && s.attributes.koppen) || [];
+  }
+
+  _teken() {
+    if (!this._vak) return;
+    const s = this._sensor();
+    if (!s) {
+      this._vak.innerHTML =
+        '<div class="leeg">Sensor ' + this._config.entity + " niet gevonden.</div>";
+      return;
+    }
+
+    if (this._open) {
+      this._tekenBericht();
+      return;
+    }
+
+    const koppen = this._koppen();
+    const titel =
+      this._config.titel || s.attributes.friendly_name || "Teletekst";
+    const pagina = s.attributes.pagina || "";
+
+    if (!koppen.length) {
+      this._vak.innerHTML =
+        '<div class="lijst-kop"><h2>' + titel + "</h2></div>" +
+        '<div class="leeg">Deze pagina heeft geen koppen met een paginanummer. ' +
+        "Kies een overzichtspagina, bijvoorbeeld 101 of 601.</div>";
+      return;
+    }
+
+    this._vak.innerHTML =
+      '<div class="lijst-kop"><h2>' + titel + "</h2>" +
+      '<span class="bron">teletekst ' + pagina + "</span></div><ul>" +
+      koppen
+        .map(function (k, i) {
+          return (
+            "<li><button class='kop' data-i='" + i + "'>" +
+            "<span class='nr'>" + k.pagina + "</span>" +
+            "<span class='titel'>" + k.tekst + "</span></button></li>"
+          );
+        })
+        .join("") +
+      "</ul>";
+
+    const self = this;
+    this._vak.querySelectorAll("button.kop").forEach(function (b) {
+      b.addEventListener("click", function () {
+        self._openen(koppen[Number(b.dataset.i)]);
+      });
+    });
+  }
+
+  async _openen(kop) {
+    this._open = { kop: kop, tekst: "bezig met ophalen..." };
+    this._tekenBericht();
+    try {
+      const d = await this._hass.callApi(
+        "GET",
+        "nos_teletekst/" + encodeURIComponent(kop.pagina)
+      );
+      // De koptekst en het paginakader zeggen niets; alleen het bericht tonen.
+      const regels = (d.tekst || "").split("\n").filter(function (r) {
+        return r && !/^nos teletekst/i.test(r);
+      });
+      this._open.tekst = regels.join("\n");
+    } catch (err) {
+      this._open.tekst =
+        "Ophalen mislukte: " + ((err && err.body && err.body.fout) || err.message || err);
+    }
+    this._tekenBericht();
+  }
+
+  _tekenBericht() {
+    const o = this._open;
+    this._vak.innerHTML =
+      '<button class="terug">&#8592; alle koppen</button>' +
+      '<div class="lijst-kop"><h2>' + o.kop.tekst + "</h2>" +
+      '<span class="bron">teletekst ' + o.kop.pagina + "</span></div>" +
+      '<div class="bericht"></div>';
+    this._vak.querySelector(".bericht").textContent = o.tekst;
+    const self = this;
+    this._vak.querySelector(".terug").addEventListener("click", function () {
+      self._open = null;
+      self._teken();
+    });
+  }
+}
+
+customElements.define("nos-teletekst-koppen-card", NosTeletekstKoppen);
+
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "nos-teletekst-card",
   name: "NOS Teletekst",
   description: "Teletekstpagina's van de NOS, in de originele opmaak.",
+  preview: true,
+});
+window.customCards.push({
+  type: "nos-teletekst-koppen-card",
+  name: "NOS Teletekst koppen",
+  description: "De koppen als leesbare lijst; tik erop en het bericht klapt open.",
   preview: true,
 });
 
