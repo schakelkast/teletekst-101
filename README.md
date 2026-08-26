@@ -64,7 +64,7 @@ op — smal op een telefoon, breed op een groot scherm, en nooit breder dan tv.
 Dit project is **niet van de NOS en heeft geen band met de NOS** — niet
 aangesloten, niet goedgekeurd, niet gesponsord. De naam wordt alleen gebruikt om
 te beschrijven welke dienst deze integratie ontsluit. De pagina's en het
-lettertype komen van de NOS en blijven van hen; zie de [licentie](LICENSE).
+lettertype komen van de NOS en blijven van hen; zie [MERK.md](MERK.md).
 
 ## Dank
 
@@ -85,10 +85,10 @@ vrijblijvend — de licentie verplicht het:
 > Houd het bestand `LICENSE` met de copyrightvermelding in je kopie.
 
 **Neem je ook het icoon mee, dan geldt er meer.** Logo's vallen niet onder MIT,
-dus daar staan aparte afspraken voor onderaan de [licentie](LICENSE): noem de
-bron met een link hierheen, wek niet de indruk dat jouw versie de originele is,
-en maak een eigen icoon zodra je iets wezenlijk anders bouwt. Vervang je het
-icoon door eigen werk, dan heb je alleen met MIT te maken.
+dus daar staan aparte afspraken voor in [MERK.md](MERK.md): noem de bron met een
+link hierheen, wek niet de indruk dat jouw versie de originele is, en maak een
+eigen icoon zodra je iets wezenlijk anders bouwt. Vervang je het icoon door eigen
+werk, dan heb je alleen met MIT te maken.
 
 Heb je iets werkends gemaakt? Stuur een pull request. Dan heeft iedereen er wat
 aan in plaats van dat het in een losse fork blijft hangen.
