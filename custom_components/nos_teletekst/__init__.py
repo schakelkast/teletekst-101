@@ -25,6 +25,7 @@ from homeassistant.core import (
 )
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
 
 from . import tekst
 from .api import (
@@ -37,7 +38,9 @@ from .api import (
 from .const import (
     CONF_INTERVAL,
     CONF_PAGINAS,
+    CONF_TREFWOORDEN,
     CONF_VERKEER,
+    CONF_WEGEN,
     DIENST_PAGINA,
     DIENST_ZOEK,
     DOMAIN,
@@ -114,10 +117,43 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "verkeer": verkeer_c,
     }
 
+    _ruim_oude_entiteiten_op(hass, entry, coordinators, verkeer_c)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     _registreer_diensten(hass)
     entry.async_on_unload(entry.add_update_listener(_opnieuw_laden))
     return True
+
+
+def _ruim_oude_entiteiten_op(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    coordinators: dict[str, PaginaCoordinator],
+    verkeer_c: VerkeerCoordinator | None,
+) -> None:
+    """Verwijder entiteiten van pagina's, trefwoorden of wegen die weg zijn.
+
+    Home Assistant ruimt dat niet vanzelf op: haal je een trefwoord uit de
+    instellingen, dan blijft de sensor als 'niet beschikbaar' in je lijst staan.
+    """
+    verwacht = {f"{entry.entry_id}_{nummer}" for nummer in coordinators}
+    verwacht |= {
+        f"{entry.entry_id}_trefwoord_{str(w).strip().lower()}"
+        for w in entry.options.get(CONF_TREFWOORDEN) or []
+        if str(w).strip()
+    }
+    if verkeer_c:
+        verwacht.add(f"{entry.entry_id}_verkeer")
+        verwacht |= {
+            f"{entry.entry_id}_weg_{str(w).strip().lower()}"
+            for w in entry.options.get(CONF_WEGEN) or []
+            if str(w).strip()
+        }
+
+    register = er.async_get(hass)
+    for item in list(er.async_entries_for_config_entry(register, entry.entry_id)):
+        if item.unique_id not in verwacht:
+            _LOGGER.debug("Entiteit %s hoort niet meer bij de instellingen", item.entity_id)
+            register.async_remove(item.entity_id)
 
 
 async def _opnieuw_laden(hass: HomeAssistant, entry: ConfigEntry) -> None:
