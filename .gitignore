@@ -1,0 +1,8 @@
+# Mainframe-eigen bestanden, horen niet in de gedeelde repository
+briefing.md
+dashboard.json
+deploy.sh
+
+__pycache__/
+*.py[cod]
+.DS_Store

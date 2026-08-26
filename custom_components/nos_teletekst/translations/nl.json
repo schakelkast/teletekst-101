@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "NOS Teletekst",
+        "description": "Hiermee wordt de teletekst-kaart geladen en kan Home Assistant pagina's bij de NOS ophalen. Voeg daarna de kaart 'NOS Teletekst' toe aan een dashboard."
+      }
+    },
+    "abort": {
+      "already_configured": "NOS Teletekst is al toegevoegd."
+    }
+  }
+}
