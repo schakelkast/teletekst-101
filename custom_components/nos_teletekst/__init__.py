@@ -27,7 +27,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_registry as er
 
-from . import tekst
+from . import eigen, tekst
 from .api import (
     PaginaBestaatNiet,
     TeletekstFout,
@@ -36,17 +36,22 @@ from .api import (
     haal_pagina,
 )
 from .const import (
+    CONF_EIGEN,
+    CONF_ENTITEITEN,
     CONF_INTERVAL,
     CONF_PAGINAS,
     CONF_TREFWOORDEN,
     CONF_VERKEER,
     CONF_WEGEN,
     DIENST_PAGINA,
+    ENTITEIT_BEELD,
+    ENTITEIT_SENSOR,
     DIENST_ZOEK,
     DOMAIN,
     FRONTEND_URL,
     KAART_BESTAND,
     MIN_INTERVAL,
+    STANDAARD_ENTITEITEN,
     STANDAARD_INTERVAL,
     STANDAARD_PAGINAS,
     VERSIE,
@@ -92,7 +97,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         frontend.add_extra_js_url(hass, KAART_URL_VERSIE)
         _LOGGER.info("Lovelace staat in YAML-modus; kaart geladen via extra_module_url")
 
-    paginas = entry.options.get(CONF_PAGINAS, STANDAARD_PAGINAS)
+    paginas = list(entry.options.get(CONF_PAGINAS, STANDAARD_PAGINAS))
+    # Een eigen sensor kan naar een pagina wijzen die je verder niet volgt.
+    # Die moet dan toch opgehaald worden, anders blijft hij leeg.
+    for definitie in entry.options.get(CONF_EIGEN) or []:
+        extra = str(definitie.get("pagina") or "")
+        if extra and extra not in paginas:
+            paginas.append(extra)
     interval = max(
         MIN_INTERVAL, int(entry.options.get(CONF_INTERVAL, STANDAARD_INTERVAL))
     )
@@ -135,8 +146,16 @@ def _ruim_oude_entiteiten_op(
     Home Assistant ruimt dat niet vanzelf op: haal je een trefwoord uit de
     instellingen, dan blijft de sensor als 'niet beschikbaar' in je lijst staan.
     """
-    verwacht = {f"{entry.entry_id}_{nummer}" for nummer in coordinators}
-    verwacht |= {f"{entry.entry_id}_beeld_{nummer}" for nummer in coordinators}
+    gekozen = entry.options.get(CONF_ENTITEITEN, STANDAARD_ENTITEITEN)
+    verwacht: set[str] = set()
+    if ENTITEIT_SENSOR in gekozen:
+        verwacht |= {f"{entry.entry_id}_{nummer}" for nummer in coordinators}
+    if ENTITEIT_BEELD in gekozen:
+        verwacht |= {f"{entry.entry_id}_beeld_{nummer}" for nummer in coordinators}
+    verwacht |= {
+        f"{entry.entry_id}_eigen_{eigen.sleutel(d)}"
+        for d in entry.options.get(CONF_EIGEN) or []
+    }
     verwacht |= {
         f"{entry.entry_id}_trefwoord_{str(w).strip().lower()}"
         for w in entry.options.get(CONF_TREFWOORDEN) or []

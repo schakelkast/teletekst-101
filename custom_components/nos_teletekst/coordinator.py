@@ -64,6 +64,10 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "ruwe_inhoud": inhoud,
             "kop": tekst.kop(inhoud),
             "regels": tekst.naar_regels(inhoud),
+            # Met de lege regels erin, zodat regelnummers overeenkomen met wat
+            # je op het scherm telt. Zonder dit wijst "regel 5" naar de vijfde
+            # niet-lege regel en dus naar iets anders dan de gebruiker bedoelt.
+            "alle_regels": tekst.naar_regels(inhoud, houd_leeg=True),
             "koppen": tekst.koppen(inhoud),
             "koppen_markdown": tekst.koppen_markdown(inhoud),
             "tekst": plat,

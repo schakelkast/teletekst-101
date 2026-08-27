@@ -9,14 +9,21 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from . import eigen
+from .const import (
+    CONF_EIGEN,
+    CONF_ENTITEITEN,
+    DOMAIN,
+    ENTITEIT_SENSOR,
+    STANDAARD_ENTITEITEN,
+)
 from .coordinator import PaginaCoordinator, VerkeerCoordinator
 
 
@@ -27,11 +34,18 @@ async def async_setup_entry(
     gegevens = hass.data[DOMAIN][entry.entry_id]
     coordinators: dict[str, PaginaCoordinator] = gegevens["coordinators"]
 
-    entiteiten: list[SensorEntity] = [
-        TeletekstSensor(c, entry) for c in coordinators.values()
-    ]
+    gekozen = entry.options.get(CONF_ENTITEITEN, STANDAARD_ENTITEITEN)
+    entiteiten: list[SensorEntity] = []
+    if ENTITEIT_SENSOR in gekozen:
+        entiteiten += [TeletekstSensor(c, entry) for c in coordinators.values()]
     if gegevens.get("verkeer"):
         entiteiten.append(VerkeerSensor(gegevens["verkeer"], entry))
+
+    # Sensoren die de gebruiker zelf heeft samengesteld.
+    for definitie in entry.options.get(CONF_EIGEN) or []:
+        pagina = str(definitie.get("pagina") or "")
+        if pagina in coordinators:
+            entiteiten.append(EigenSensor(coordinators[pagina], entry, definitie))
     async_add_entities(entiteiten)
 
 
@@ -116,4 +130,64 @@ class VerkeerSensor(CoordinatorEntity[VerkeerCoordinator], SensorEntity):
             "wegen": d.get("wegen", []),
             "meldingen": d.get("meldingen", []),
             "bron": "ANWB via NOS Teletekst",
+        }
+
+
+class EigenSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
+    """Een sensor die de gebruiker zelf heeft samengesteld.
+
+    Welke regel van een pagina interessant is, verschilt per persoon. Deze
+    sensor leest uit wat er in de instellingen is aangewezen.
+    """
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:text-search"
+
+    def __init__(
+        self,
+        coordinator: PaginaCoordinator,
+        entry: ConfigEntry,
+        definitie: dict[str, Any],
+    ) -> None:
+        """Koppel de sensor aan zijn eigen leesregel."""
+        super().__init__(coordinator)
+        self._definitie = definitie
+        self._attr_unique_id = f"{entry.entry_id}_eigen_{eigen.sleutel(definitie)}"
+        self._attr_name = str(definitie.get("naam") or "Eigen sensor")
+        eenheid = str(definitie.get("eenheid") or "").strip()
+        if eenheid:
+            self._attr_native_unit_of_measurement = eenheid
+        if definitie.get("alleen_getal"):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name="NOS Teletekst",
+            manufacturer="NOS",
+            entry_type=DeviceEntryType.SERVICE,
+            configuration_url="https://nos.nl/teletekst",
+        )
+
+    def _regels(self) -> list[str]:
+        """Op nummer tellen gaat over het scherm, zoeken over de tekst.
+
+        Bij een vast regelnummer moeten de lege regels meetellen, anders komt
+        regel 5 niet uit op de vijfde rij die je ziet staan.
+        """
+        data = self.coordinator.data or {}
+        if self._definitie.get("manier") == eigen.MANIER_REGEL:
+            return data.get("alle_regels", [])
+        return data.get("regels", [])
+
+    @property
+    def native_value(self) -> str | float | None:
+        """De waarde volgens de eigen leesregel."""
+        return eigen.lees(self._regels(), self._definitie)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Laat zien waar de waarde vandaan komt, handig bij het afstellen."""
+        return {
+            "pagina": self._definitie.get("pagina"),
+            "manier": self._definitie.get("manier"),
+            "gevonden_regel": eigen.zoek_regel(self._regels(), self._definitie),
         }

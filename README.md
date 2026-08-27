@@ -34,6 +34,7 @@
 | **Trefwoorden** | een sensor die aangaat bij nieuws over jouw onderwerp |
 | **Verkeer** | files en afsluitingen per weg, uit de ANWB-pagina's |
 | **Diensten** | elke pagina ophalen of doorzoeken vanuit een automatisering |
+| **Eigen sensoren** | wijs zelf een regel van een pagina aan en maak er een sensor van |
 | **Instellen** | volledig via de interface, geen YAML nodig |
 
 ## Wat je ermee kunt
@@ -252,6 +253,31 @@ je gevolgde pagina's staat, met de gevonden regels in de attributen.
 Elke gevolgde pagina krijgt ook een `image`-entiteit: de pagina getekend met het
 echte teletekstfont, in 4:3 zoals op tv. Bruikbaar in een plaatjeskaart, in een
 melding, of op een e-ink display.
+
+### Zelf een sensor maken
+
+Teletekst staat vol met dingen waar precies één iemand op zit te wachten: de
+temperatuur in De Bilt, een waterstand, de stand van je club. Bij
+**Configureren → Eigen sensor maken** wijs je zelf aan wat je wilt volgen.
+
+Je kiest een pagina en hoe de regel gevonden moet worden:
+
+- **de eerste regel met een woord erin** — bijvoorbeeld `De Bilt` op pagina 702
+- **een vast regelnummer** — regel 1 is de bovenste rij van de pagina
+
+Daarna kun je aanvinken dat je alleen het eerste getal van die regel wilt, met
+een eenheid erbij. Dan krijg je een gewone getalsensor waar je grafieken van kunt
+maken. De pagina hoeft er niet een te zijn die je al volgt; hij wordt vanzelf
+opgehaald.
+
+Het attribuut `gevonden_regel` laat zien welke regel gepakt is, zodat je kunt
+zien of je goed hebt gemikt.
+
+### Wat er aangemaakt wordt
+
+Per gevolgde pagina kun je aanvinken wat je wilt: de tekstsensor, de afbeelding,
+of allebei. De afbeelding staat standaard uit. Wat je uitvinkt verdwijnt uit je
+lijst — er blijven geen dode entiteiten achter.
 
 ### Verkeer
 

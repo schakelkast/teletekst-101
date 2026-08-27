@@ -20,7 +20,7 @@
   },
   "options": {
     "step": {
-      "init": {
+      "instellingen": {
         "title": "Which pages do you want to follow?",
         "description": "Each page gets a sensor. Its state is the first meaningful line; the full text sits in the attributes, ready for a notification or a voice assistant. For example 101 for news, 601 for sport, 702 for weather.",
         "data": {
@@ -28,18 +28,61 @@
           "interval": "Refresh interval",
           "trefwoorden": "Keywords",
           "verkeer": "Fetch traffic information",
-          "wegen": "Roads to watch"
+          "wegen": "Roads to watch",
+          "entiteiten": "What do you want per page?"
         },
         "data_description": {
           "trefwoorden": "Each word gets a sensor that turns on as soon as it appears on one of your followed pages. Useful for a notification about your team, your town, or any topic you follow.",
           "verkeer": "Fetches page 730 and all its subpages: jams, closures and diversions from the ANWB. Costs six extra requests per round.",
-          "wegen": "Each road gets a sensor that turns on as soon as there is a report for it. For example A15, A16, N3."
+          "wegen": "Each road gets a sensor that turns on as soon as there is a report for it. For example A15, A16, N3.",
+          "entiteiten": "Tick what gets created. The image is off by default: it costs processing time and is mainly useful for notifications or an e-ink display. Anything you untick disappears from your list."
+        }
+      },
+      "init": {
+        "title": "NOS Teletekst",
+        "description": "What do you want to change?",
+        "menu_options": {
+          "instellingen": "Settings",
+          "sensor_toevoegen": "Create or edit your own sensor",
+          "sensor_verwijderen": "Remove your own sensor"
+        }
+      },
+      "sensor_toevoegen": {
+        "title": "Your own sensor",
+        "description": "Point at the line of a page you want to follow. For example: page 702, the first line containing 'De Bilt', only the number, unit °C. An existing sensor with the same name is replaced.",
+        "data": {
+          "naam": "Name",
+          "pagina": "Page",
+          "manier": "Which line?",
+          "zoekwoord": "Word to look for",
+          "regel": "Line number",
+          "alleen_getal": "Only the first number on the line",
+          "eenheid": "Unit"
+        },
+        "data_description": {
+          "naam": "This becomes the sensor name.",
+          "pagina": "It does not have to be a page you already follow; it will be fetched.",
+          "zoekwoord": "Only needed when searching for a word.",
+          "regel": "Only needed for a fixed line number. Line 1 is the top one.",
+          "eenheid": "For example °C or km. Leave empty if it is not a number."
+        }
+      },
+      "sensor_verwijderen": {
+        "title": "Remove your own sensor",
+        "description": "Tick what should go.",
+        "data": {
+          "weg": "Remove"
         }
       }
     },
     "error": {
       "ongeldige_pagina": "One of the page numbers is not valid. Use three digits, optionally with a subpage: 101 or 100-2.",
-      "geen_paginas": "Pick at least one page."
+      "geen_paginas": "Pick at least one page.",
+      "geen_naam": "Give the sensor a name.",
+      "geen_zoekwoord": "Enter a word to search for."
+    },
+    "abort": {
+      "geen_eigen_sensoren": "You have not created any sensors yet."
     }
   },
   "services": {

@@ -17,7 +17,12 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from . import render
-from .const import DOMAIN
+from .const import (
+    CONF_ENTITEITEN,
+    DOMAIN,
+    ENTITEIT_BEELD,
+    STANDAARD_ENTITEITEN,
+)
 from .coordinator import PaginaCoordinator
 
 
@@ -25,6 +30,9 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Maak een afbeelding voor elke gevolgde pagina."""
+    if ENTITEIT_BEELD not in entry.options.get(CONF_ENTITEITEN, STANDAARD_ENTITEITEN):
+        return
+
     coordinators: dict[str, PaginaCoordinator] = hass.data[DOMAIN][entry.entry_id][
         "coordinators"
     ]

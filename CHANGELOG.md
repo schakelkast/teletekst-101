@@ -1,5 +1,16 @@
 # Wat er veranderd is
 
+## 1.6.0
+
+- **Zelf sensoren maken.** Wijs bij Configureren een regel van een pagina aan en
+  maak er een sensor van: de eerste regel met een woord erin, of een vast
+  regelnummer. Eventueel alleen het getal, met een eenheid.
+- **Je bepaalt wat er aangemaakt wordt.** Per pagina vink je aan of je de
+  tekstsensor wilt, de afbeelding, of allebei. De afbeelding staat nu standaard
+  uit — twaalf entiteiten aanmaken zonder te vragen was te veel.
+- **Opgelost:** bij een vast regelnummer werden lege regels niet meegeteld,
+  waardoor regel 5 op een andere rij uitkwam dan je op het scherm ziet.
+
 ## 1.5.0
 
 - **Instellingsschermen voor beide kaarten.** Geen YAML meer nodig: kies de

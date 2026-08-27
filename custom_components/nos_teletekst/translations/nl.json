@@ -20,7 +20,7 @@
   },
   "options": {
     "step": {
-      "init": {
+      "instellingen": {
         "title": "Welke pagina's wil je volgen?",
         "description": "Elke pagina krijgt een sensor. De toestand is de eerste betekenisvolle regel; de volledige tekst staat in de attributen, klaar voor een melding of een spraakassistent. Bijvoorbeeld 101 voor nieuws, 601 voor sport, 702 voor het weer.",
         "data": {
@@ -28,18 +28,61 @@
           "interval": "Hoe vaak verversen",
           "trefwoorden": "Trefwoorden",
           "verkeer": "Verkeersinformatie ophalen",
-          "wegen": "Wegen om in de gaten te houden"
+          "wegen": "Wegen om in de gaten te houden",
+          "entiteiten": "Wat wil je per pagina?"
         },
         "data_description": {
           "trefwoorden": "Elk woord krijgt een sensor die aangaat zodra het op een van je gevolgde pagina's staat. Handig om een melding te krijgen bij nieuws over je club, je woonplaats of een onderwerp dat je volgt.",
           "verkeer": "Haalt pagina 730 met alle subpagina's op: files, afsluitingen en omleidingen van de ANWB. Kost zes extra aanvragen per ronde.",
-          "wegen": "Elke weg krijgt een sensor die aangaat zodra er een melding voor staat. Bijvoorbeeld A15, A16, N3."
+          "wegen": "Elke weg krijgt een sensor die aangaat zodra er een melding voor staat. Bijvoorbeeld A15, A16, N3.",
+          "entiteiten": "Vink aan wat er aangemaakt wordt. De afbeelding staat standaard uit: die kost rekentijd en is vooral handig voor meldingen of een e-ink scherm. Wat je uitvinkt verdwijnt uit je lijst."
+        }
+      },
+      "init": {
+        "title": "NOS Teletekst",
+        "description": "Wat wil je aanpassen?",
+        "menu_options": {
+          "instellingen": "Instellingen",
+          "sensor_toevoegen": "Eigen sensor maken of aanpassen",
+          "sensor_verwijderen": "Eigen sensor verwijderen"
+        }
+      },
+      "sensor_toevoegen": {
+        "title": "Eigen sensor",
+        "description": "Wijs aan welke regel van een pagina je wilt volgen. Bijvoorbeeld: pagina 702, de eerste regel met 'De Bilt' erin, alleen het getal, eenheid °C. Een bestaande sensor met dezelfde naam wordt vervangen.",
+        "data": {
+          "naam": "Naam",
+          "pagina": "Pagina",
+          "manier": "Welke regel?",
+          "zoekwoord": "Woord om op te zoeken",
+          "regel": "Regelnummer",
+          "alleen_getal": "Alleen het eerste getal uit de regel",
+          "eenheid": "Eenheid"
+        },
+        "data_description": {
+          "naam": "Zo heet de sensor straks.",
+          "pagina": "Hoeft geen pagina te zijn die je al volgt; hij wordt dan vanzelf opgehaald.",
+          "zoekwoord": "Alleen nodig als je op een woord zoekt.",
+          "regel": "Alleen nodig bij een vast regelnummer. Regel 1 is de bovenste.",
+          "eenheid": "Bijvoorbeeld °C of km. Laat leeg als het geen getal is."
+        }
+      },
+      "sensor_verwijderen": {
+        "title": "Eigen sensor verwijderen",
+        "description": "Vink aan wat weg mag.",
+        "data": {
+          "weg": "Verwijderen"
         }
       }
     },
     "error": {
       "ongeldige_pagina": "Een paginanummer klopt niet. Gebruik drie cijfers, eventueel met subpagina: 101 of 100-2.",
-      "geen_paginas": "Kies minstens één pagina."
+      "geen_paginas": "Kies minstens één pagina.",
+      "geen_naam": "Geef de sensor een naam.",
+      "geen_zoekwoord": "Vul een woord in om op te zoeken."
+    },
+    "abort": {
+      "geen_eigen_sensoren": "Je hebt nog geen eigen sensoren gemaakt."
     }
   },
   "services": {

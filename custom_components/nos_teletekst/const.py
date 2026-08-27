@@ -4,7 +4,7 @@ DOMAIN = "nos_teletekst"
 
 # Versie van de meegeleverde kaart. Ophogen bij elke wijziging aan het
 # js-bestand, anders blijven browsers de gecachte versie gebruiken.
-VERSIE = "1.5.0"
+VERSIE = "1.6.0"
 
 # Waar de meegeleverde kaart en het font vandaan komen.
 FRONTEND_URL = "/nos_teletekst_frontend"
@@ -21,6 +21,14 @@ CONF_INTERVAL = "interval"
 CONF_TREFWOORDEN = "trefwoorden"
 CONF_VERKEER = "verkeer"
 CONF_WEGEN = "wegen"
+CONF_ENTITEITEN = "entiteiten"
+CONF_EIGEN = "eigen_sensoren"
+
+# Wat er per gevolgde pagina aangemaakt wordt. Standaard alleen de tekstsensor:
+# een afbeelding kost rekentijd en de meeste mensen gebruiken hem niet.
+ENTITEIT_SENSOR = "sensor"
+ENTITEIT_BEELD = "beeld"
+STANDAARD_ENTITEITEN = [ENTITEIT_SENSOR]
 
 # Standaard alleen de nieuwspagina. Teletekst ververst een paar keer per uur,
 # dus vaker dan dit ophalen levert niets op en belast de NOS onnodig.
