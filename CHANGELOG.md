@@ -1,5 +1,12 @@
 # Wat er veranderd is
 
+## 1.7.1
+
+- **Opgelost:** wie al sensoren had, raakte ze kwijt bij het bijwerken naar
+  1.7.0. De nieuwe standaard "niets aanmaken" gold namelijk ook voor bestaande
+  installaties. Nu blijven bestaande sensoren staan; alleen een nieuwe
+  installatie begint leeg.
+
 ## 1.7.0
 
 - **Installeren maakt niets meer aan.** De teletekstkaart werkt zonder

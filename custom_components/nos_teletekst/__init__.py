@@ -97,6 +97,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         frontend.add_extra_js_url(hass, KAART_URL_VERSIE)
         _LOGGER.info("Lovelace staat in YAML-modus; kaart geladen via extra_module_url")
 
+    _migreer(hass, entry)
+
     paginas = list(entry.options.get(CONF_PAGINAS, STANDAARD_PAGINAS))
     # Een eigen sensor kan naar een pagina wijzen die je verder niet volgt.
     # Die moet dan toch opgehaald worden, anders blijft hij leeg.
@@ -174,6 +176,28 @@ def _ruim_oude_entiteiten_op(
         if item.unique_id not in verwacht:
             _LOGGER.debug("Entiteit %s hoort niet meer bij de instellingen", item.entity_id)
             register.async_remove(item.entity_id)
+
+
+def _migreer(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Zorg dat een bestaande installatie niets kwijtraakt bij het bijwerken.
+
+    Tot versie 1.7 kreeg elke gevolgde pagina vanzelf een tekstsensor. Daarna is
+    de standaard leeg geworden, zodat installeren niets aanmaakt. Zonder deze
+    stap zouden bestaande gebruikers hun sensoren zien verdwijnen en daarmee
+    hun automatiseringen zien breken.
+    """
+    if CONF_ENTITEITEN in entry.options:
+        return
+    if not entry.options.get(CONF_PAGINAS):
+        return
+    _LOGGER.info(
+        "Bestaande installatie: tekstsensoren blijven behouden voor %s",
+        ", ".join(entry.options[CONF_PAGINAS]),
+    )
+    hass.config_entries.async_update_entry(
+        entry,
+        options={**entry.options, CONF_ENTITEITEN: [ENTITEIT_SENSOR]},
+    )
 
 
 async def _opnieuw_laden(hass: HomeAssistant, entry: ConfigEntry) -> None:
