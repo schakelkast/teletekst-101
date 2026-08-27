@@ -2,12 +2,20 @@
   "config": {
     "step": {
       "user": {
-        "title": "NOS Teletekst",
-        "description": "Hiermee wordt de teletekst-kaart geladen en kan Home Assistant pagina's bij de NOS ophalen. Voeg daarna de kaart 'NOS Teletekst' toe aan een dashboard."
+        "title": "NOS Teletekst instellen",
+        "description": "Kies welke pagina's je wilt volgen. Elke pagina krijgt een sensor met de tekst erin, klaar voor meldingen, spraak of een dashboard. Je kunt dit later altijd aanpassen.",
+        "data": {
+          "paginas": "Pagina's om te volgen",
+          "verkeer": "Ook verkeersinformatie ophalen"
+        }
       }
     },
     "abort": {
       "already_configured": "NOS Teletekst is al toegevoegd."
+    },
+    "error": {
+      "ongeldige_pagina": "Een paginanummer klopt niet. Gebruik drie cijfers, eventueel met subpagina: 101 of 100-2.",
+      "geen_paginas": "Kies minstens één pagina."
     }
   },
   "options": {

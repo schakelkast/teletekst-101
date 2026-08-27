@@ -55,7 +55,7 @@ from .coordinator import PaginaCoordinator, VerkeerCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.IMAGE, Platform.SENSOR]
 
 # Statische paden en views kunnen maar een keer geregistreerd worden.
 GEREGISTREERD = f"{DOMAIN}_geregistreerd"
@@ -136,6 +136,7 @@ def _ruim_oude_entiteiten_op(
     instellingen, dan blijft de sensor als 'niet beschikbaar' in je lijst staan.
     """
     verwacht = {f"{entry.entry_id}_{nummer}" for nummer in coordinators}
+    verwacht |= {f"{entry.entry_id}_beeld_{nummer}" for nummer in coordinators}
     verwacht |= {
         f"{entry.entry_id}_trefwoord_{str(w).strip().lower()}"
         for w in entry.options.get(CONF_TREFWOORDEN) or []
@@ -182,6 +183,7 @@ def _registreer_diensten(hass: HomeAssistant) -> None:
             "kop": tekst.kop(inhoud),
             "regels": tekst.naar_regels(inhoud),
             "koppen": tekst.koppen(inhoud),
+            "koppen_markdown": tekst.koppen_markdown(inhoud),
             "tekst": tekst.naar_tekst(inhoud),
             "verwijzingen": tekst.paginaverwijzingen(inhoud),
             "volgende_pagina": ruw.get("nextPage") or None,

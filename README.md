@@ -95,6 +95,30 @@ actions:
   - set_conversation_response: "{{ pagina.kop }}"
 ```
 
+**Teletekst als plaatje, ook buiten je dashboard.** Elke gevolgde pagina krijgt
+een `image`-entiteit die de pagina tekent zoals hij op tv staat — met kleuren en
+blokgrafiek. Meesturen in een melding, op een e-ink schermpje zetten, of in een
+gewone plaatjeskaart tonen.
+
+```yaml
+actions:
+  - action: notify.mobile_app_telefoon
+    data:
+      message: "Het nieuws van teletekst"
+      data:
+        image: /api/image_proxy/image.nos_teletekst_pagina_101_beeld
+```
+
+**Vanuit een ander systeem.** Node-RED, een script of wat dan ook kan de pagina
+rechtstreeks ophalen bij Home Assistant, met een gewoon toegangstoken:
+
+```bash
+curl -H "Authorization: Bearer <token>"      http://homeassistant.local:8123/api/nos_teletekst/101
+```
+
+Je krijgt de ruwe teletekst-HTML terug plus `tekst`, `regels`, `koppen` en
+`koppen_markdown`.
+
 **En gewoon: teletekst kijken.** Op je telefoon, je tablet of een wandpaneel.
 Subpagina's lopen vanzelf door, net als op tv.
 
@@ -118,6 +142,9 @@ Er hoeft niets in `configuration.yaml` en er hoeft geen Lovelace-resource
 toegevoegd te worden: de integratie regelt dat zelf.
 
 ## De kaarten
+
+Beide kaarten hebben een gewoon instellingsscherm: je hoeft geen YAML te
+schrijven. Kies ze in de kaartkiezer en vul de velden in.
 
 Er zijn er twee. **NOS Teletekst** geeft de pagina zoals hij uitgezonden wordt.
 **NOS Teletekst koppen** geeft dezelfde inhoud als leeslijst — prettiger op een
@@ -188,11 +215,18 @@ regel; de rest staat in de attributen:
 | `tekst` | de hele pagina als platte tekst |
 | `regels` | dezelfde tekst als lijst |
 | `koppen` | koppen met het paginanummer erbij: `[{tekst, pagina}]` |
+| `koppen_markdown` | dezelfde koppen als lijst, zo in een Markdown-kaart te plakken |
 | `verwijzingen` | alle paginanummers waar deze pagina naar doorverwijst |
 | `volgende_pagina`, `volgende_subpagina` | om doorheen te bladeren |
 
 Elk trefwoord krijgt een `binary_sensor` die aangaat zodra het woord op een van
 je gevolgde pagina's staat, met de gevonden regels in de attributen.
+
+### Afbeelding
+
+Elke gevolgde pagina krijgt ook een `image`-entiteit: de pagina getekend met het
+echte teletekstfont, in 4:3 zoals op tv. Bruikbaar in een plaatjeskaart, in een
+melding, of op een e-ink display.
 
 ### Verkeer
 

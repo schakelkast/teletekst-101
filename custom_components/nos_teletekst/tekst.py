@@ -139,3 +139,18 @@ def koppen(content: str) -> list[dict[str, str]]:
 def paginaverwijzingen(content: str) -> list[str]:
     """Alle paginanummers waar deze pagina naar doorverwijst."""
     return sorted({m for m in re.findall(r'href="#(\d{3}(?:-\d+)?)"', content or "")})
+
+
+def koppen_markdown(content: str, pagina_erbij: bool = True) -> str:
+    """De koppen als markdown-lijst, klaar voor een Markdown-kaart.
+
+    Zonder dit moet je in je dashboard een lus met een sjabloon schrijven om
+    iets leesbaars te krijgen. Nu plak je het attribuut er zo in.
+    """
+    regels = []
+    for k in koppen(content):
+        if pagina_erbij:
+            regels.append(f"- {k['tekst']} `{k['pagina']}`")
+        else:
+            regels.append(f"- {k['tekst']}")
+    return "\n".join(regels)

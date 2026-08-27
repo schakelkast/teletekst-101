@@ -95,6 +95,7 @@ class TeletekstView(HomeAssistantView):
         data["tekst"] = tekstmodule.naar_tekst(inhoud)
         data["regels"] = tekstmodule.naar_regels(inhoud)
         data["koppen"] = tekstmodule.koppen(inhoud)
+        data["koppen_markdown"] = tekstmodule.koppen_markdown(inhoud)
 
         # De pagina ververst bij de NOS elke paar seconden.
         return self.json(data, headers={"cache-control": "max-age=5"})

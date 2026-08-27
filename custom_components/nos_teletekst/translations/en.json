@@ -2,12 +2,20 @@
   "config": {
     "step": {
       "user": {
-        "title": "NOS Teletekst",
-        "description": "This loads the teletext card and lets Home Assistant fetch pages from the NOS. Afterwards, add the 'NOS Teletekst' card to a dashboard."
+        "title": "Set up NOS Teletekst",
+        "description": "Choose which pages to follow. Each page gets a sensor holding its text, ready for notifications, voice or a dashboard. You can change this later.",
+        "data": {
+          "paginas": "Pages to follow",
+          "verkeer": "Also fetch traffic information"
+        }
       }
     },
     "abort": {
       "already_configured": "NOS Teletekst has already been added."
+    },
+    "error": {
+      "ongeldige_pagina": "One of the page numbers is not valid. Use three digits, optionally with a subpage: 101 or 100-2.",
+      "geen_paginas": "Pick at least one page."
     }
   },
   "options": {

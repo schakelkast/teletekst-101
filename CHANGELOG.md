@@ -1,5 +1,17 @@
 # Wat er veranderd is
 
+## 1.5.0
+
+- **Instellingsschermen voor beide kaarten.** Geen YAML meer nodig: kies de
+  kaart en vul de velden in.
+- **Teletekst als afbeelding.** Elke gevolgde pagina krijgt een `image`-entiteit
+  die de pagina tekent met het echte teletekstfont. Voor meldingen, e-ink
+  schermpjes of een plaatjeskaart.
+- **Pagina's kiezen bij het installeren**, met de bekendste alvast in de lijst.
+  Voorheen kreeg je alleen 101 en moest je de instellingen zien te vinden.
+- **`koppen_markdown`**: de koppen als kant-en-klare lijst voor een
+  Markdown-kaart, zonder sjabloon.
+
 ## 1.4.0
 
 - **Koppenlijst-kaart** (`custom:nos-teletekst-koppen-card`). De koppen als

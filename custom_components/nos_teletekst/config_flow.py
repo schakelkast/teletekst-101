@@ -28,6 +28,19 @@ from .const import (
 )
 
 
+# De bekendste pagina's, zodat je bij het installeren niet hoeft te raden.
+SUGGESTIES = [
+    ("101", "Nieuws"),
+    ("104", "Binnenland"),
+    ("120", "Buitenland"),
+    ("501", "Economie"),
+    ("601", "Sport"),
+    ("702", "Weer"),
+    ("801", "Voetbal"),
+]
+SUGGESTIE_PAGINAS = ["101"]
+
+
 class NosTeletekstConfigFlow(ConfigFlow, domain=DOMAIN):
     """Voegt de integratie toe. Er is maar een exemplaar nodig."""
 
@@ -36,21 +49,51 @@ class NosTeletekstConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Bevestig het toevoegen."""
+        """Vraag meteen welke pagina's je wilt volgen.
+
+        Dat kan ook achteraf bij Configureren, maar wie net installeert weet
+        nog niet dat die knop bestaat en houdt anders alleen pagina 101 over.
+        """
+        fouten: dict[str, str] = {}
         await self.async_set_unique_id(DOMAIN)
         self._abort_if_unique_id_configured()
 
-        if user_input is None:
-            return self.async_show_form(step_id="user")
+        if user_input is not None:
+            paginas = [p.strip() for p in user_input.get(CONF_PAGINAS, []) if p.strip()]
+            if any(not geldige_pagina(p) for p in paginas):
+                fouten[CONF_PAGINAS] = "ongeldige_pagina"
+            elif not paginas:
+                fouten[CONF_PAGINAS] = "geen_paginas"
+            else:
+                return self.async_create_entry(
+                    title="NOS Teletekst",
+                    data={},
+                    options={
+                        CONF_PAGINAS: paginas,
+                        CONF_INTERVAL: STANDAARD_INTERVAL,
+                        CONF_VERKEER: user_input.get(CONF_VERKEER, False),
+                    },
+                )
 
-        return self.async_create_entry(
-            title="NOS Teletekst",
-            data={},
-            options={
-                CONF_PAGINAS: STANDAARD_PAGINAS,
-                CONF_INTERVAL: STANDAARD_INTERVAL,
-            },
+        schema = vol.Schema(
+            {
+                vol.Required(CONF_PAGINAS, default=list(SUGGESTIE_PAGINAS)): (
+                    selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=[
+                                selector.SelectOptionDict(value=nr, label=f"{nr} - {naam}")
+                                for nr, naam in SUGGESTIES
+                            ],
+                            multiple=True,
+                            custom_value=True,
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                        )
+                    )
+                ),
+                vol.Optional(CONF_VERKEER, default=False): selector.BooleanSelector(),
+            }
         )
+        return self.async_show_form(step_id="user", data_schema=schema, errors=fouten)
 
     @staticmethod
     @callback

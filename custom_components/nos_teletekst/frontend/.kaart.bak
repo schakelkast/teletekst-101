@@ -122,10 +122,6 @@ class NosTeletekstKaart extends HTMLElement {
     this._ratio = TEKEN_BREEDTE;
   }
 
-  static getConfigElement() {
-    return document.createElement("nos-teletekst-card-editor");
-  }
-
   static getStubConfig() {
     return { page: "100", refresh: 60 };
   }
@@ -617,155 +613,6 @@ class NosTeletekstKaart extends HTMLElement {
   }
 }
 
-/* ==========================================================================
- * Instellingsschermen
- *
- * Zonder deze schermen moet je de kaarten in YAML instellen, en dat doen de
- * meeste mensen nooit. Ze zijn opgebouwd met ha-form, zodat de velden er
- * hetzelfde uitzien als bij de ingebouwde kaarten.
- * ========================================================================== */
-
-const KAART_SCHEMA = [
-  { name: "page", selector: { text: {} } },
-  {
-    name: "refresh",
-    selector: { number: { min: 0, max: 3600, step: 10, mode: "box", unit_of_measurement: "s" } },
-  },
-  {
-    name: "aspect",
-    selector: {
-      select: {
-        mode: "dropdown",
-        options: [
-          { value: "auto", label: "Meebewegen met het scherm" },
-          { value: "tv", label: "Breed, zoals op tv (4:3)" },
-          { value: "web", label: "Smal, zoals op nos.nl" },
-        ],
-      },
-    },
-  },
-  {
-    name: "subpages",
-    selector: {
-      select: {
-        mode: "dropdown",
-        options: [
-          { value: "auto", label: "Vanzelf doorlopen" },
-          { value: "off", label: "Stil laten staan" },
-        ],
-      },
-    },
-  },
-  {
-    name: "subpage_seconds",
-    selector: { number: { min: 3, max: 60, step: 1, mode: "box", unit_of_measurement: "s" } },
-  },
-  { name: "controls", selector: { boolean: {} } },
-  {
-    name: "max_height",
-    selector: { number: { min: 0, max: 2000, step: 10, mode: "box", unit_of_measurement: "px" } },
-  },
-];
-
-const KAART_LABELS = {
-  page: "Beginpagina",
-  refresh: "Verversen elke",
-  aspect: "Vorm van het beeld",
-  subpages: "Subpagina's",
-  subpage_seconds: "Subpagina blijft staan",
-  controls: "Knoppenbalk tonen",
-  max_height: "Maximale hoogte (0 = zelf bepalen)",
-};
-
-const KAART_UITLEG = {
-  page: "Waar de kaart op begint. Een subpagina mag ook: 100-2.",
-  refresh: "Nul zet het automatisch verversen uit.",
-  aspect: "Op tv zijn de tekens breder dan op nos.nl. Automatisch kiest wat past.",
-  subpage_seconds: "Blader je zelf, dan stopt het doorlopen vanzelf.",
-  max_height: "Handig op een wandpaneel met weinig ruimte.",
-};
-
-const KOPPEN_SCHEMA = [
-  {
-    name: "entity",
-    selector: { entity: { domain: "sensor", integration: "nos_teletekst" } },
-  },
-  { name: "titel", selector: { text: {} } },
-];
-
-const KOPPEN_LABELS = { entity: "Teletekst-sensor", titel: "Kop boven de lijst" };
-const KOPPEN_UITLEG = {
-  entity: "Kies een overzichtspagina, bijvoorbeeld 101 of 601. Alleen die hebben koppen.",
-  titel: "Laat leeg om de naam van de sensor te gebruiken.",
-};
-
-class TeletekstFormulier extends HTMLElement {
-  constructor(schema, labels, uitleg) {
-    super();
-    this._schema = schema;
-    this._labels = labels;
-    this._uitleg = uitleg || {};
-  }
-
-  setConfig(config) {
-    this._config = Object.assign({}, config);
-    this._teken();
-  }
-
-  set hass(hass) {
-    this._hass = hass;
-    this._teken();
-  }
-
-  _teken() {
-    if (!this._config || !this._hass) return;
-    if (!this._form) {
-      this._form = document.createElement("ha-form");
-      this._form.addEventListener("value-changed", (e) => this._gewijzigd(e));
-      this.appendChild(this._form);
-    }
-    const self = this;
-    this._form.hass = this._hass;
-    this._form.data = this._config;
-    this._form.schema = this._schema;
-    this._form.computeLabel = function (s) {
-      return self._labels[s.name] || s.name;
-    };
-    this._form.computeHelper = function (s) {
-      return self._uitleg[s.name] || "";
-    };
-  }
-
-  _gewijzigd(e) {
-    // Alleen overschrijven wat het formulier kent: opties die je met de hand in
-    // YAML hebt gezet, zoals favorieten, moeten blijven staan.
-    const nieuw = Object.assign({}, this._config, e.detail.value);
-    this._config = nieuw;
-    this.dispatchEvent(
-      new CustomEvent("config-changed", {
-        detail: { config: nieuw },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-}
-
-class NosTeletekstKaartEditor extends TeletekstFormulier {
-  constructor() {
-    super(KAART_SCHEMA, KAART_LABELS, KAART_UITLEG);
-  }
-}
-
-class NosTeletekstKoppenEditor extends TeletekstFormulier {
-  constructor() {
-    super(KOPPEN_SCHEMA, KOPPEN_LABELS, KOPPEN_UITLEG);
-  }
-}
-
-customElements.define("nos-teletekst-card-editor", NosTeletekstKaartEditor);
-customElements.define("nos-teletekst-koppen-card-editor", NosTeletekstKoppenEditor);
-
 customElements.define("nos-teletekst-card", NosTeletekstKaart);
 
 /* ==========================================================================
@@ -802,10 +649,6 @@ class NosTeletekstKoppen extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this._open = null;
-  }
-
-  static getConfigElement() {
-    return document.createElement("nos-teletekst-koppen-card-editor");
   }
 
   static getStubConfig(hass) {

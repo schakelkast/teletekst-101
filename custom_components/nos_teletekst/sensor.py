@@ -70,6 +70,7 @@ class TeletekstSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
             "pagina": d.get("pagina"),
             "regels": d.get("regels", []),
             "koppen": d.get("koppen", []),
+            "koppen_markdown": d.get("koppen_markdown", ""),
             "tekst": d.get("tekst", ""),
             "verwijzingen": d.get("verwijzingen", []),
             "vorige_pagina": d.get("vorige_pagina"),

@@ -59,9 +59,13 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         data = {
             "pagina": self.pagina,
+            # De tekenaar heeft de originele HTML nodig: daar zitten de kleuren
+            # en de blokgrafiek in, die in platte tekst verloren gaan.
+            "ruwe_inhoud": inhoud,
             "kop": tekst.kop(inhoud),
             "regels": tekst.naar_regels(inhoud),
             "koppen": tekst.koppen(inhoud),
+            "koppen_markdown": tekst.koppen_markdown(inhoud),
             "tekst": plat,
             "verwijzingen": tekst.paginaverwijzingen(inhoud),
             "vorige_pagina": ruw.get("prevPage") or None,
