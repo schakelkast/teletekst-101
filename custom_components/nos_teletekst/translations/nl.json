@@ -3,10 +3,11 @@
     "step": {
       "user": {
         "title": "NOS Teletekst instellen",
-        "description": "Kies welke pagina's je wilt volgen. Elke pagina krijgt een sensor met de tekst erin, klaar voor meldingen, spraak of een dashboard. Je kunt dit later altijd aanpassen.",
+        "description": "Kies eventueel meteen wat je wilt volgen. Je kunt ook niets aanvinken: de teletekstkaart werkt sowieso, en sensoren voeg je later toe via Configureren.",
         "data": {
           "paginas": "Pagina's om te volgen",
-          "verkeer": "Ook verkeersinformatie ophalen"
+          "verkeer": "Ook verkeersinformatie ophalen",
+          "entiteiten": "Wat wil je per pagina?"
         }
       }
     },
@@ -40,9 +41,10 @@
       },
       "init": {
         "title": "NOS Teletekst",
-        "description": "Wat wil je aanpassen?",
+        "description": "Wat wil je doen?",
         "menu_options": {
-          "instellingen": "Instellingen",
+          "snel": "Snel instellen",
+          "instellingen": "Zelf instellen",
           "sensor_toevoegen": "Eigen sensor maken of aanpassen",
           "sensor_verwijderen": "Eigen sensor verwijderen"
         }
@@ -72,6 +74,45 @@
         "description": "Vink aan wat weg mag.",
         "data": {
           "weg": "Verwijderen"
+        }
+      },
+      "snel": {
+        "title": "Snel instellen",
+        "description": "Kies wat je wilt. De rest wordt vanzelf goed gezet, en wat je al had blijft staan.",
+        "menu_options": {
+          "snel_nieuws": "Het nieuws volgen",
+          "snel_club": "Seintje bij nieuws over mijn club of woonplaats",
+          "snel_beeld": "Afbeelding van een pagina, voor e-ink of een melding",
+          "snel_verkeer": "Files op mijn route",
+          "snel_weer": "Temperatuur bij mij in de buurt"
+        }
+      },
+      "snel_club": {
+        "title": "Waar wil je een seintje over?",
+        "description": "Er komt een sensor die aangaat zodra dit woord op het nieuws of de sport verschijnt. Bijvoorbeeld de naam van je club of je woonplaats.",
+        "data": {
+          "woord": "Woord"
+        }
+      },
+      "snel_beeld": {
+        "title": "Welke pagina wil je als afbeelding?",
+        "description": "De pagina wordt getekend zoals hij op tv staat. Bruikbaar in een melding of op een e-ink schermpje.",
+        "data": {
+          "pagina": "Pagina"
+        }
+      },
+      "snel_verkeer": {
+        "title": "Welke wegen rijd je?",
+        "description": "Elke weg krijgt een sensor die aangaat zodra er een melding voor staat. Bijvoorbeeld A15, A16, N3. Laat leeg voor alleen het totale aantal files.",
+        "data": {
+          "wegen": "Wegen"
+        }
+      },
+      "snel_weer": {
+        "title": "Van welke plaats wil je de temperatuur?",
+        "description": "Er wordt gezocht op deze plaatsnaam in het weerbericht van pagina 702, en het eerste getal van die regel wordt de waarde.",
+        "data": {
+          "plaats": "Plaats"
         }
       }
     },

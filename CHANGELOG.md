@@ -1,5 +1,13 @@
 # Wat er veranderd is
 
+## 1.7.0
+
+- **Installeren maakt niets meer aan.** De teletekstkaart werkt zonder
+  entiteiten, dus je lijst blijft leeg tot je zelf iets kiest.
+- **Snel instellen**: kies "het nieuws volgen", "seintje over mijn club",
+  "afbeelding voor e-ink", "files op mijn route" of "temperatuur bij mij", en de
+  rest wordt goed gezet. Wat je al had blijft staan.
+
 ## 1.6.0
 
 - **Zelf sensoren maken.** Wijs bij Configureren een regel van een pagina aan en

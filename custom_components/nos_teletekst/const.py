@@ -4,7 +4,7 @@ DOMAIN = "nos_teletekst"
 
 # Versie van de meegeleverde kaart. Ophogen bij elke wijziging aan het
 # js-bestand, anders blijven browsers de gecachte versie gebruiken.
-VERSIE = "1.6.0"
+VERSIE = "1.7.0"
 
 # Waar de meegeleverde kaart en het font vandaan komen.
 FRONTEND_URL = "/nos_teletekst_frontend"
@@ -24,15 +24,16 @@ CONF_WEGEN = "wegen"
 CONF_ENTITEITEN = "entiteiten"
 CONF_EIGEN = "eigen_sensoren"
 
-# Wat er per gevolgde pagina aangemaakt wordt. Standaard alleen de tekstsensor:
-# een afbeelding kost rekentijd en de meeste mensen gebruiken hem niet.
+# Wat er per gevolgde pagina aangemaakt wordt. Standaard niets: teletekst kijken
+# kan zonder, en een lijst die zichzelf volgooit is niemands wens.
 ENTITEIT_SENSOR = "sensor"
 ENTITEIT_BEELD = "beeld"
-STANDAARD_ENTITEITEN = [ENTITEIT_SENSOR]
+STANDAARD_ENTITEITEN: list[str] = []
 
-# Standaard alleen de nieuwspagina. Teletekst ververst een paar keer per uur,
-# dus vaker dan dit ophalen levert niets op en belast de NOS onnodig.
-STANDAARD_PAGINAS = ["101"]
+# Standaard wordt er niets gevolgd en niets aangemaakt. De kaart haalt zijn
+# pagina rechtstreeks op en heeft geen entiteiten nodig; wie sensoren wil, zet
+# ze er zelf bij. Zo staat je lijst niet meteen vol na het installeren.
+STANDAARD_PAGINAS: list[str] = []
 STANDAARD_INTERVAL = 300
 
 # Actuele verkeersinformatie van de ANWB, met subpaginas.

@@ -3,10 +3,11 @@
     "step": {
       "user": {
         "title": "Set up NOS Teletekst",
-        "description": "Choose which pages to follow. Each page gets a sensor holding its text, ready for notifications, voice or a dashboard. You can change this later.",
+        "description": "Optionally pick what to follow right away. You can also tick nothing: the teletext card works regardless, and you can add sensors later under Configure.",
         "data": {
           "paginas": "Pages to follow",
-          "verkeer": "Also fetch traffic information"
+          "verkeer": "Also fetch traffic information",
+          "entiteiten": "What do you want per page?"
         }
       }
     },
@@ -40,9 +41,10 @@
       },
       "init": {
         "title": "NOS Teletekst",
-        "description": "What do you want to change?",
+        "description": "What would you like to do?",
         "menu_options": {
-          "instellingen": "Settings",
+          "snel": "Quick setup",
+          "instellingen": "Set up manually",
           "sensor_toevoegen": "Create or edit your own sensor",
           "sensor_verwijderen": "Remove your own sensor"
         }
@@ -72,6 +74,45 @@
         "description": "Tick what should go.",
         "data": {
           "weg": "Remove"
+        }
+      },
+      "snel": {
+        "title": "Quick setup",
+        "description": "Pick what you want. Everything else is set up for you, and what you already had is kept.",
+        "menu_options": {
+          "snel_nieuws": "Follow the news",
+          "snel_club": "Alert me about my team or town",
+          "snel_beeld": "Image of a page, for e-ink or a notification",
+          "snel_verkeer": "Traffic on my route",
+          "snel_weer": "Temperature near me"
+        }
+      },
+      "snel_club": {
+        "title": "What should alert you?",
+        "description": "You get a sensor that turns on as soon as this word appears on the news or sports page.",
+        "data": {
+          "woord": "Word"
+        }
+      },
+      "snel_beeld": {
+        "title": "Which page do you want as an image?",
+        "description": "The page is drawn as it appears on TV. Usable in a notification or on an e-ink display.",
+        "data": {
+          "pagina": "Page"
+        }
+      },
+      "snel_verkeer": {
+        "title": "Which roads do you drive?",
+        "description": "Each road gets a sensor that turns on when there is a report for it. Leave empty for just the total number of jams.",
+        "data": {
+          "wegen": "Roads"
+        }
+      },
+      "snel_weer": {
+        "title": "Temperature of which place?",
+        "description": "The weather page 702 is searched for this place name, and the first number on that line becomes the value.",
+        "data": {
+          "plaats": "Place"
         }
       }
     },

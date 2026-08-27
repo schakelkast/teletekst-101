@@ -36,6 +36,7 @@
 | **Diensten** | elke pagina ophalen of doorzoeken vanuit een automatisering |
 | **Eigen sensoren** | wijs zelf een regel van een pagina aan en maak er een sensor van |
 | **Instellen** | volledig via de interface, geen YAML nodig |
+| **Standaard leeg** | installeren maakt niets aan; jij kiest wat je wilt |
 
 ## Wat je ermee kunt
 
@@ -253,6 +254,24 @@ je gevolgde pagina's staat, met de gevonden regels in de attributen.
 Elke gevolgde pagina krijgt ook een `image`-entiteit: de pagina getekend met het
 echte teletekstfont, in 4:3 zoals op tv. Bruikbaar in een plaatjeskaart, in een
 melding, of op een e-ink display.
+
+### Snel instellen
+
+Na het installeren staat er niets in je lijst. Dat is met opzet: teletekst
+kijken kan zonder entiteiten, en niemand wil een lijst die zichzelf volgooit.
+
+Wil je wel iets, dan gaat dat via **Configureren → Snel instellen**. Kies wat je
+wilt en de rest wordt goed gezet:
+
+| Keuze | Wat je krijgt |
+|---|---|
+| Het nieuws volgen | pagina 101 met de tekst erin |
+| Seintje bij nieuws over mijn club | een sensor die aangaat bij jouw woord, op nieuws en sport |
+| Afbeelding van een pagina | de pagina getekend, voor e-ink of een melding |
+| Files op mijn route | verkeersinformatie, met een sensor per weg die je opgeeft |
+| Temperatuur bij mij in de buurt | het getal achter jouw plaatsnaam op de weerpagina |
+
+Wat je al had ingesteld blijft daarbij staan.
 
 ### Zelf een sensor maken
 
