@@ -47,7 +47,7 @@ pip install ruff mypy pytest pillow
 ruff check .            # stijl en echte fouten
 ruff format .           # opmaak
 mypy custom_components/nos_teletekst --ignore-missing-imports
-pytest tests -q         # 65 tests, zonder Home Assistant en zonder internet
+pytest tests -q         # zonder Home Assistant en zonder internet
 
 npx eslint custom_components/nos_teletekst/frontend/*.js
 npx prettier --check custom_components/nos_teletekst/frontend/*.js

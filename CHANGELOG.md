@@ -1,5 +1,10 @@
 # Wat er veranderd is
 
+## 1.9.1
+
+- De koppenlijst zei alleen dát de sensor ontbrak, niet waar je hem aanzet. Nu
+  wijst hij de weg naar Snel instellen.
+
 ## 1.9.0
 
 Een ronde die niets nieuws toevoegt maar alles beter maakt.

@@ -910,8 +910,14 @@ class NosTeletekstKoppen extends HTMLElement {
     if (!this._vak) return;
     const s = this._sensor();
     if (!s) {
+      // Een doodlopende melding helpt niemand: vertel er meteen bij waar je
+      // die sensor aanzet.
       this._vak.innerHTML =
-        '<div class="leeg">Sensor ' + this._config.entity + " niet gevonden.</div>";
+        '<div class="leeg"><b>Sensor ' +
+        this._config.entity +
+        " bestaat nog niet.</b><br>Zet hem aan bij Instellingen &rarr; Apparaten en " +
+        "diensten &rarr; NOS Teletekst &rarr; Configureren &rarr; Snel instellen " +
+        "&rarr; Het nieuws volgen.</div>";
       return;
     }
 
