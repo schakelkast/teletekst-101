@@ -4,7 +4,7 @@ DOMAIN = "nos_teletekst"
 
 # Versie van de meegeleverde kaart. Ophogen bij elke wijziging aan het
 # js-bestand, anders blijven browsers de gecachte versie gebruiken.
-VERSIE = "1.7.1"
+VERSIE = "1.7.2"
 
 # Waar de meegeleverde kaart en het font vandaan komen.
 FRONTEND_URL = "/nos_teletekst_frontend"

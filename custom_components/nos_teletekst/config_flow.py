@@ -18,6 +18,7 @@ from .api import geldige_pagina
 from .eigen import MANIER_REGEL, MANIER_ZOEK
 from .eigen import sleutel as eigen_sleutel
 from .const import (
+    CONF_EIGEN,
     CONF_INTERVAL,
     CONF_PAGINAS,
     CONF_ENTITEITEN,

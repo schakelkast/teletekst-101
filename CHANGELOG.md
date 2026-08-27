@@ -1,5 +1,13 @@
 # Wat er veranderd is
 
+## 1.7.2
+
+- **Opgelost:** "Eigen sensor verwijderen" gaf een serverfout. Er ontbrak een
+  import, en die regel wordt pas uitgevoerd als je op die knop drukt, dus het
+  viel bij het bouwen niet op.
+- Er draait nu een test die elke module nakijkt op namen die nergens vandaan
+  komen, zodat zoiets voortaan bij het bouwen stukloopt en niet bij jou.
+
 ## 1.7.1
 
 - **Opgelost:** wie al sensoren had, raakte ze kwijt bij het bijwerken naar
