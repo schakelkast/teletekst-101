@@ -1,15 +1,40 @@
-# NOS Teletekst voor Home Assistant
+<h1 align="center">NOS Teletekst voor Home Assistant</h1>
 
-[![HACS: custom](https://img.shields.io/badge/HACS-custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
-[![Release](https://img.shields.io/github/v/release/schakelkast/teletekst-101)](https://github.com/schakelkast/teletekst-101/releases)
-[![Validatie](https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml/badge.svg)](https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml)
-[![Licentie: MIT](https://img.shields.io/badge/licentie-MIT-green.svg)](LICENSE)
+<p align="center">
+  Teletekst zoals het op tv staat: 40&times;24 tekens, blokgrafiek en de acht
+  teletekstkleuren.<br>
+  En omdat het gewone entiteiten zijn, kun je er ook mee automatiseren.
+</p>
 
-Teletekst in Home Assistant, zoals het op tv staat: 40×24 tekens, blokgrafiek,
-de acht teletekstkleuren. En omdat het gewoon entiteiten zijn, kun je er ook
-mee automatiseren.
+<p align="center">
+  <a href="https://hacs.xyz/docs/faq/custom_repositories"><img src="https://img.shields.io/badge/HACS-custom-41BDF5.svg" alt="HACS"></a>
+  <a href="https://github.com/schakelkast/teletekst-101/releases"><img src="https://img.shields.io/github/v/release/schakelkast/teletekst-101" alt="Release"></a>
+  <a href="https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml"><img src="https://github.com/schakelkast/teletekst-101/actions/workflows/validate.yml/badge.svg" alt="Validatie"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licentie-MIT-green.svg" alt="MIT"></a>
+</p>
 
-![Teletekst in Home Assistant](images/teletekst-kaart.png)
+<p align="center">
+  <img src="images/teletekst-kaart.png" width="620" alt="Teletekst in Home Assistant">
+</p>
+
+<p align="center">
+  <sub><b>English</b> &mdash; Dutch NOS Teletext inside Home Assistant: two Lovelace
+  cards, a sensor per page with the plain text, keyword alerts, live traffic
+  information from the ANWB pages, and a rendered image entity you can use in
+  notifications or on an e-ink display. Interface and documentation are in Dutch,
+  as is the source.</sub>
+</p>
+
+## In het kort
+
+| | |
+|---|---|
+| **Kaarten** | de pagina zoals hij uitgezonden wordt, en een leesbare koppenlijst |
+| **Per pagina** | een sensor met de tekst, en een afbeelding van de pagina |
+| **Trefwoorden** | een sensor die aangaat bij nieuws over jouw onderwerp |
+| **Verkeer** | files en afsluitingen per weg, uit de ANWB-pagina's |
+| **Diensten** | elke pagina ophalen of doorzoeken vanuit een automatisering |
+| **Instellen** | volledig via de interface, geen YAML nodig |
 
 ## Wat je ermee kunt
 
