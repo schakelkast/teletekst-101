@@ -6,8 +6,6 @@ melding, op een e-ink schermpje zetten, of in een gewone plaatjeskaart tonen.
 
 from __future__ import annotations
 
-from datetime import datetime
-
 from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -54,7 +52,8 @@ class TeletekstAfbeelding(CoordinatorEntity[PaginaCoordinator], ImageEntity):
         CoordinatorEntity.__init__(self, coordinator)
         ImageEntity.__init__(self, hass)
         self._attr_unique_id = f"{entry.entry_id}_beeld_{coordinator.pagina}"
-        self._attr_name = f"Pagina {coordinator.pagina} beeld"
+        self._attr_translation_key = "beeld"
+        self._attr_translation_placeholders = {"pagina": coordinator.pagina}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             name="NOS Teletekst",

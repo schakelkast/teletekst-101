@@ -46,6 +46,7 @@ async def haal_pagina(hass: HomeAssistant, pagina: str) -> dict[str, Any]:
     Raises:
         PaginaBestaatNiet: de NOS geeft 404.
         TeletekstFout: netwerkfout of een onverwacht antwoord.
+
     """
     if not geldige_pagina(pagina):
         raise TeletekstFout(f"ongeldig paginanummer: {pagina}")

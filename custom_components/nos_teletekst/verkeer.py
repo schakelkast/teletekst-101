@@ -15,6 +15,25 @@ Voorbeeld van een melding zoals hij op de pagina staat:
 from __future__ import annotations
 
 import re
+from typing import TypedDict
+
+
+class Melding(TypedDict):
+    """Een uitgelezen verkeersmelding.
+
+    Een eigen type in plaats van een losse dict: zo weet zowel de lezer als de
+    typecontrole dat `km` een getal is en `weg` een tekst, en klopt het optellen
+    van de kilometers aantoonbaar.
+    """
+
+    soort: str
+    weg: str
+    van: str | None
+    naar: str | None
+    km: int | None
+    minuten: int | None
+    tekst: str
+
 
 # Regels die bij de pagina horen en niet bij een melding.
 _OVERSLAAN = re.compile(
@@ -70,9 +89,9 @@ def _samenvoegen(regels: list[str]) -> list[tuple[str, str]]:
     return meldingen
 
 
-def lees(regels: list[str]) -> list[dict[str, object]]:
+def lees(regels: list[str]) -> list[Melding]:
     """Zet de regels van een verkeerspagina om in losse meldingen."""
-    uit: list[dict[str, object]] = []
+    uit: list[Melding] = []
     for sectie, melding in _samenvoegen(regels):
         weg = _WEG.search(melding)
         if not weg:
@@ -83,32 +102,32 @@ def lees(regels: list[str]) -> list[dict[str, object]]:
         minuten = _MINUTEN.search(melding)
 
         uit.append(
-            {
-                "soort": sectie or "Overig",
-                "weg": weg.group(1),
-                "van": richting.group(1).strip() if richting else None,
-                "naar": richting.group(2).strip() if richting else None,
-                "km": int(km.group(1)) if km else None,
-                "minuten": int(minuten.group(1)) if minuten else None,
-                "tekst": melding,
-            }
+            Melding(
+                soort=sectie or "Overig",
+                weg=weg.group(1),
+                van=richting.group(1).strip() if richting else None,
+                naar=richting.group(2).strip() if richting else None,
+                km=int(km.group(1)) if km else None,
+                minuten=int(minuten.group(1)) if minuten else None,
+                tekst=melding,
+            )
         )
     return uit
 
 
-def is_file(melding: dict[str, object]) -> bool:
+def is_file(melding: Melding) -> bool:
     """Een file is een melding met een lengte; de rest is werk of afsluiting."""
-    return str(melding.get("soort", "")).lower().startswith("file")
+    return melding["soort"].lower().startswith("file")
 
 
-def samenvatting(meldingen: list[dict[str, object]]) -> dict[str, object]:
+def samenvatting(meldingen: list[Melding]) -> dict[str, object]:
     """Tel de files bij elkaar op tot iets dat je in een melding kunt zetten."""
     files = [m for m in meldingen if is_file(m)]
-    km = sum(int(m["km"]) for m in files if m.get("km"))
-    minuten = sum(int(m["minuten"]) for m in files if m.get("minuten"))
+    km = sum(m["km"] or 0 for m in files)
+    minuten = sum(m["minuten"] or 0 for m in files)
     # A2 hoort voor A15 te staan, dus op nummer sorteren en niet op tekst.
     wegen = sorted(
-        {str(m["weg"]) for m in meldingen if m.get("weg")},
+        {m["weg"] for m in meldingen if m["weg"]},
         key=lambda w: (w[0], int(re.sub(r"\D", "", w) or 0), w),
     )
     return {

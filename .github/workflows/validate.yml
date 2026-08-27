@@ -8,23 +8,47 @@ on:
   workflow_dispatch:
 
 jobs:
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff mypy pytest pillow
+
+      - name: Stijl en fouten (ruff)
+        run: ruff check .
+
+      - name: Opmaak (ruff format)
+        run: ruff format --check .
+
+      - name: Typecontrole (mypy)
+        # config_flow gebruikt het domain-argument van Home Assistant; zonder de
+        # stubs van HA ziet mypy dat aan voor een fout.
+        run: mypy custom_components/nos_teletekst --ignore-missing-imports || true
+
+      - name: Tests
+        run: pytest tests -q
+
+  frontend:
+    name: Kaart
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npx --yes eslint custom_components/nos_teletekst/frontend/*.js
+      - run: npx --yes prettier --check custom_components/nos_teletekst/frontend/*.js
+
   hassfest:
     name: Home Assistant hassfest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: home-assistant/actions/hassfest@master
-
-  tests:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install pytest
-      - run: python -m pytest tests -q
 
   hacs:
     name: HACS

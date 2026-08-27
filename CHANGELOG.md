@@ -1,5 +1,24 @@
 # Wat er veranderd is
 
+## 1.9.0
+
+Een ronde die niets nieuws toevoegt maar alles beter maakt.
+
+- **Entiteitsnamen zijn nu vertaald.** Ze stonden hardcoded in het Nederlands,
+  dus een Engelse gebruiker zag "Pagina 101". Nu komen ze uit de vertaling:
+  "Page 101".
+- **Twee echte fouten uit de typecontrole.** Het schaalfilter gebruikte de oude
+  Pillow-naam die op termijn verdwijnt, en de verkeersmeldingen waren losse
+  dicts waardoor het optellen van kilometers niet te controleren viel. Die
+  hebben nu een eigen type.
+- **Twee ongebruikte imports** eruit, en de hele codebase door dezelfde linter
+  en formatter als Home Assistant zelf gebruikt.
+- **Twee nieuwe bewakers**, allebei voor fouten die anders pas bij de gebruiker
+  opduiken: één die kijkt of elke gebruikte naam geïmporteerd is, en één die
+  kijkt of elk scherm en elke entiteitsnaam een vertaling heeft in beide talen.
+- **De CI controleert nu alles**: ruff, mypy, de tests, en eslint plus prettier
+  op de kaart. 65 tests.
+
 ## 1.8.0
 
 - **Aantal regels verder** bij een eigen sensor. Teletekst zet de waarde vaak

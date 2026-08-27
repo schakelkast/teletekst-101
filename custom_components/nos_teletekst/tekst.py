@@ -42,6 +42,7 @@ def naar_regels(content: str, houd_leeg: bool = False) -> list[str]:
         content: het `content`-veld uit het antwoord van de NOS.
         houd_leeg: lege regels behouden. Standaard gaan ze eruit, want die
             komen vooral uit de blokgrafiek en zeggen niets.
+
     """
     if not content:
         return []
@@ -103,7 +104,9 @@ def kop(content: str) -> str:
 # Een kop op een indexpagina eindigt op het paginanummer waar het verhaal
 # staat: "Vrees groot voor veel meer doden... 128" of "Dubbeltwee.. 695/1".
 _MENUREGEL = re.compile(r"\d{3}(?:\s{2,}\S|\s*[/|])")
-_KOP_MET_PAGINA = re.compile(r"^(?P<tekst>.*?)[\s.…]*(?<!\d)(?P<pagina>\d{3})(?:/(?P<sub>\d+))?$")
+_KOP_MET_PAGINA = re.compile(
+    r"^(?P<tekst>.*?)[\s.…]*(?<!\d)(?P<pagina>\d{3})(?:/(?P<sub>\d+))?$"
+)
 
 
 def koppen(content: str) -> list[dict[str, str]]:

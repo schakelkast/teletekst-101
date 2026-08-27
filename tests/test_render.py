@@ -12,12 +12,9 @@ sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "custom_components" / "nos_teletekst")
 )
 
-import render  # noqa: E402
+import render
 
-EENVOUDIG = (
-    '<span class="yellow">AB</span>\n'
-    '<span class="blue bg-blue">CD</span>'
-)
+EENVOUDIG = '<span class="yellow">AB</span>\n<span class="blue bg-blue">CD</span>'
 
 
 def test_rooster_is_altijd_40_bij_25():

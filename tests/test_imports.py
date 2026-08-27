@@ -49,9 +49,7 @@ def _beschikbaar(boom: ast.Module) -> set[str]:
         elif isinstance(n, (ast.Global, ast.Nonlocal)):
             namen |= set(n.names)
         elif isinstance(n, ast.comprehension):
-            namen |= {
-                t.id for t in ast.walk(n.target) if isinstance(t, ast.Name)
-            }
+            namen |= {t.id for t in ast.walk(n.target) if isinstance(t, ast.Name)}
     return namen
 
 
@@ -65,4 +63,6 @@ def test_geen_onbekende_namen(naam):
         if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)
     }
     ontbreekt = sorted(gebruikt - beschikbaar)
-    assert not ontbreekt, f"{naam} gebruikt namen die nergens vandaan komen: {ontbreekt}"
+    assert not ontbreekt, (
+        f"{naam} gebruikt namen die nergens vandaan komen: {ontbreekt}"
+    )

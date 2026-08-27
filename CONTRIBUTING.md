@@ -38,6 +38,31 @@ je herlaadt.
 Code en commentaar zijn Nederlands, net als teletekst zelf. Houd dat aan, dan
 blijft het een geheel.
 
+## Controles draaien
+
+Alles wat de CI doet, kun je lokaal draaien:
+
+```bash
+pip install ruff mypy pytest pillow
+ruff check .            # stijl en echte fouten
+ruff format .           # opmaak
+mypy custom_components/nos_teletekst --ignore-missing-imports
+pytest tests -q         # 65 tests, zonder Home Assistant en zonder internet
+
+npx eslint custom_components/nos_teletekst/frontend/*.js
+npx prettier --check custom_components/nos_teletekst/frontend/*.js
+```
+
+Twee tests verdienen een toelichting, want ze vangen fouten die anders pas bij
+de gebruiker opduiken:
+
+- **`test_imports.py`** kijkt per bestand of elke gebruikte naam ergens vandaan
+  komt. Een ontbrekende import in een knop die je zelden aanklikt geeft anders
+  een kale serverfout.
+- **`test_vertalingen.py`** kijkt of elk scherm en elke entiteitsnaam een
+  vertaling heeft, in beide talen. Zonder vertaling ziet de gebruiker een
+  technische sleutel in plaats van een zin.
+
 ## Forken
 Een eigen fork maken en die kant op verder bouwen mag zonder te vragen. De
 MIT-licentie stelt één harde voorwaarde: het `LICENSE`-bestand met de

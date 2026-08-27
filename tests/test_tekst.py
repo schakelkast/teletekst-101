@@ -12,9 +12,11 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "custom_components" / "nos_teletekst"))
+sys.path.insert(
+    0, str(Path(__file__).resolve().parents[1] / "custom_components" / "nos_teletekst")
+)
 
-import tekst  # noqa: E402
+import tekst
 
 VASTE_PAGINA = json.loads((Path(__file__).parent / "pagina101.json").read_text("utf-8"))
 INHOUD = VASTE_PAGINA["content"]
@@ -74,7 +76,7 @@ def test_koppen_bevatten_geen_menuregels():
 
 def test_jaartal_is_geen_paginanummer():
     """'copyright N O S 2026' verwijst niet naar pagina 026."""
-    koppen = tekst.koppen('<span>copyright N O S  2026</span>')
+    koppen = tekst.koppen("<span>copyright N O S  2026</span>")
     assert koppen == []
 
 

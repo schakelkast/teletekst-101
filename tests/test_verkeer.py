@@ -12,7 +12,7 @@ sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "custom_components" / "nos_teletekst")
 )
 
-import verkeer  # noqa: E402
+import verkeer
 
 # Zoals de regels van pagina 730 binnenkomen: meldingen lopen over meerdere
 # regels door en beginnen met een streepje.

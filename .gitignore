@@ -8,3 +8,6 @@ __pycache__/
 *.py[cod]
 .DS_Store
 push.sh
+.mypy_cache/
+.ruff_cache/
+node_modules/

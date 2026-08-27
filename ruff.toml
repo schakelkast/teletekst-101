@@ -1,0 +1,30 @@
+# Zelfde kern als Home Assistant zelf gebruikt.
+target-version = "py312"
+line-length = 88
+
+[lint]
+select = [
+    "E", "W",      # pycodestyle
+    "F",           # pyflakes: ongebruikte en ontbrekende namen
+    "I",           # isort: importvolgorde
+    "UP",          # pyupgrade
+    "B",           # bugbear: echte valkuilen
+    "SIM",         # vereenvoudigingen
+    "RUF",         # ruff-eigen regels
+    "D",           # docstrings
+    "ASYNC",       # async-valkuilen
+    "PTH",         # pathlib in plaats van os.path
+    "TRY",         # foutafhandeling
+]
+ignore = [
+    "D203", "D213",  # botsen met D211/D212
+    "TRY003",        # lange foutmeldingen zijn hier juist behulpzaam
+    # De code en de commentaren zijn Nederlands, net als teletekst zelf.
+    # Deze twee regels controleren Engelse schrijfwijzen en slaan hier de plank
+    # mis: "Controleer of..." is gewoon gebiedende wijs, en een docstring die
+    # een vraag stelt hoort op een vraagteken te eindigen, niet op een punt.
+    "D400", "D401",
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["D103", "D100"]

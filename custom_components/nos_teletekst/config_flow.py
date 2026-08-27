@@ -15,13 +15,11 @@ from homeassistant.core import callback
 from homeassistant.helpers import selector
 
 from .api import geldige_pagina
-from .eigen import MANIER_REGEL, MANIER_ZOEK
-from .eigen import sleutel as eigen_sleutel
 from .const import (
     CONF_EIGEN,
+    CONF_ENTITEITEN,
     CONF_INTERVAL,
     CONF_PAGINAS,
-    CONF_ENTITEITEN,
     CONF_TREFWOORDEN,
     CONF_VERKEER,
     CONF_WEGEN,
@@ -33,7 +31,8 @@ from .const import (
     STANDAARD_INTERVAL,
     STANDAARD_PAGINAS,
 )
-
+from .eigen import MANIER_REGEL, MANIER_ZOEK
+from .eigen import sleutel as eigen_sleutel
 
 # De bekendste pagina's, zodat je bij het installeren niet hoeft te raden.
 SUGGESTIES = [
@@ -87,7 +86,9 @@ class NosTeletekstConfigFlow(ConfigFlow, domain=DOMAIN):
                     selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=[
-                                selector.SelectOptionDict(value=nr, label=f"{nr} - {naam}")
+                                selector.SelectOptionDict(
+                                    value=nr, label=f"{nr} - {naam}"
+                                )
                                 for nr, naam in SUGGESTIES
                             ],
                             multiple=True,
@@ -252,7 +253,7 @@ class NosTeletekstOptionsFlow(OptionsFlow):
     async def async_step_snel(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Kant-en-klare keuzes, zodat je niet zelf hoeft uit te zoeken wat waar hoort."""
+        """Kant-en-klare keuzes, zodat je niet hoeft uit te zoeken wat waar hoort."""
         return self.async_show_menu(
             step_id="snel",
             menu_options=[
@@ -266,9 +267,7 @@ class NosTeletekstOptionsFlow(OptionsFlow):
 
     def _bewaar(self, wijziging: dict[str, Any]) -> ConfigFlowResult:
         """Voeg iets toe aan de bestaande instellingen zonder de rest te raken."""
-        return self.async_create_entry(
-            data={**self.config_entry.options, **wijziging}
-        )
+        return self.async_create_entry(data={**self.config_entry.options, **wijziging})
 
     def _met_pagina(self, pagina: str) -> list[str]:
         paginas = list(self.config_entry.options.get(CONF_PAGINAS, []))
@@ -345,7 +344,9 @@ class NosTeletekstOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         """Files op de wegen die jij rijdt."""
         if user_input is not None:
-            wegen = [w.strip().upper() for w in user_input.get("wegen", []) if w.strip()]
+            wegen = [
+                w.strip().upper() for w in user_input.get("wegen", []) if w.strip()
+            ]
             return self._bewaar({CONF_VERKEER: True, CONF_WEGEN: wegen})
 
         return self.async_show_form(
@@ -413,9 +414,10 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                 fouten["pagina"] = "ongeldige_pagina"
             elif not str(user_input.get("naam", "")).strip():
                 fouten["naam"] = "geen_naam"
-            elif user_input["manier"] == MANIER_ZOEK and not str(
-                user_input.get("zoekwoord", "")
-            ).strip():
+            elif (
+                user_input["manier"] == MANIER_ZOEK
+                and not str(user_input.get("zoekwoord", "")).strip()
+            ):
                 fouten["zoekwoord"] = "geen_zoekwoord"
             else:
                 nieuw = {
@@ -446,7 +448,8 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                     selector.SelectSelectorConfig(
                         options=[
                             selector.SelectOptionDict(
-                                value=MANIER_ZOEK, label="De eerste regel met een woord erin"
+                                value=MANIER_ZOEK,
+                                label="De eerste regel met een woord erin",
                             ),
                             selector.SelectOptionDict(
                                 value=MANIER_REGEL, label="Een vaste regel, op nummer"

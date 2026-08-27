@@ -63,7 +63,8 @@ class TrefwoordSensor(BinarySensorEntity):
         self._woord = str(woord).strip()
         self._coordinators = coordinators
         self._attr_unique_id = f"{entry.entry_id}_trefwoord_{self._woord.lower()}"
-        self._attr_name = f"Trefwoord {self._woord}"
+        self._attr_translation_key = "trefwoord"
+        self._attr_translation_placeholders = {"woord": self._woord}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             name="NOS Teletekst",
@@ -87,9 +88,7 @@ class TrefwoordSensor(BinarySensorEntity):
         woord = self._woord.lower()
         uit: list[dict[str, Any]] = []
         for nummer, c in self._coordinators.items():
-            regels = [
-                r for r in (c.data or {}).get("regels", []) if woord in r.lower()
-            ]
+            regels = [r for r in (c.data or {}).get("regels", []) if woord in r.lower()]
             if regels:
                 uit.append({"pagina": nummer, "regels": regels})
         return uit
@@ -130,7 +129,8 @@ class WegSensor(CoordinatorEntity[VerkeerCoordinator], BinarySensorEntity):
         super().__init__(coordinator)
         self._weg = weg.upper()
         self._attr_unique_id = f"{entry.entry_id}_weg_{self._weg.lower()}"
-        self._attr_name = f"Verkeer {self._weg}"
+        self._attr_translation_key = "weg"
+        self._attr_translation_placeholders = {"weg": self._weg}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             name="NOS Teletekst",
@@ -142,7 +142,9 @@ class WegSensor(CoordinatorEntity[VerkeerCoordinator], BinarySensorEntity):
     def _mijn_meldingen(self) -> list[dict[str, Any]]:
         d = self.coordinator.data or {}
         return [
-            m for m in d.get("meldingen", []) if str(m.get("weg", "")).upper() == self._weg
+            m
+            for m in d.get("meldingen", [])
+            if str(m.get("weg", "")).upper() == self._weg
         ]
 
     @property
@@ -154,7 +156,9 @@ class WegSensor(CoordinatorEntity[VerkeerCoordinator], BinarySensorEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Wat er precies aan de hand is, en hoeveel vertraging."""
         meldingen = self._mijn_meldingen()
-        files = [m for m in meldingen if str(m.get("soort", "")).lower().startswith("file")]
+        files = [
+            m for m in meldingen if str(m.get("soort", "")).lower().startswith("file")
+        ]
         return {
             "weg": self._weg,
             "aantal_meldingen": len(meldingen),

@@ -153,5 +153,28 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "pagina": {
+        "name": "Page {pagina}"
+      },
+      "verkeer": {
+        "name": "Traffic"
+      }
+    },
+    "binary_sensor": {
+      "trefwoord": {
+        "name": "Keyword {woord}"
+      },
+      "weg": {
+        "name": "Traffic {weg}"
+      }
+    },
+    "image": {
+      "beeld": {
+        "name": "Page {pagina} image"
+      }
+    }
   }
 }

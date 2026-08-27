@@ -28,7 +28,7 @@ const REGEL_HOOGTE = 1.2037;
 // De kaart rekt mee met het scherm en stopt bij de tv-verhouding, zodat een
 // breed scherm gevuld wordt zonder dat het beeld onnatuurlijk uitgerekt raakt.
 const CEL_WEB = TEKEN_BREEDTE / REGEL_HOOGTE; // 0,50
-const CEL_TV = (4 / KOLOMMEN) / (3 / REGELS); // 0,833
+const CEL_TV = 4 / KOLOMMEN / (3 / REGELS); // 0,833
 
 // Het font moet in het document staan; een @font-face binnen een shadow root
 // wordt door de browser genegeerd.
@@ -37,8 +37,12 @@ function laadFont() {
   const st = document.createElement("style");
   st.id = "teletekst-font";
   st.textContent =
-    "@font-face{font-family:'" + FONT + "';" +
-    "src:url('" + FONT_URL + "') format('woff');" +
+    "@font-face{font-family:'" +
+    FONT +
+    "';" +
+    "src:url('" +
+    FONT_URL +
+    "') format('woff');" +
     "font-weight:normal;font-style:normal;font-display:block;}";
   document.head.appendChild(st);
 }
@@ -73,7 +77,9 @@ const STIJL = [
   "pre.pagina span, pre.pagina a { padding-right:.03em; margin-right:-.03em; }",
   "pre.pagina a { color:inherit; text-decoration:none; cursor:pointer; }",
   "pre.pagina a:hover { outline:1px solid rgba(255,255,255,.6); }",
-  ".balk { background:#000; color:#fff; font-family:'" + FONT + "','Vera Mono',monospace;",
+  ".balk { background:#000; color:#fff; font-family:'" +
+    FONT +
+    "','Vera Mono',monospace;",
   "  display:flex; flex-direction:column; gap:.35em; padding:.5em; flex:0 0 auto; }",
   ".vak.onder .balk { width:100%; }",
   ".rij { display:flex; gap:.25em; align-items:stretch; justify-content:center; flex-wrap:wrap; }",
@@ -221,7 +227,9 @@ class NosTeletekstKaart extends HTMLElement {
     const proef = document.createElement("span");
     proef.style.cssText =
       "position:absolute;visibility:hidden;white-space:pre;font-size:200px;" +
-      "font-family:'" + FONT + "','Vera Mono',monospace";
+      "font-family:'" +
+      FONT +
+      "','Vera Mono',monospace";
     proef.textContent = "M".repeat(KOLOMMEN);
     document.body.appendChild(proef);
     const breedte = proef.getBoundingClientRect().width;
@@ -365,7 +373,8 @@ class NosTeletekstKaart extends HTMLElement {
   /** De integratie geeft bij een fout een leesbare reden mee. */
   _foutTekst(err) {
     if (err && err.body && err.body.fout) return err.body.fout;
-    if (err && err.status_code === 404) return "pagina " + this._pagina + " bestaat niet";
+    if (err && err.status_code === 404)
+      return "pagina " + this._pagina + " bestaat niet";
     if (err && err.status_code === 401) return "niet ingelogd";
     if (err && err.message) return err.message;
     return String(err);
@@ -406,15 +415,27 @@ class NosTeletekstKaart extends HTMLElement {
     const draait = sub && this._config.subpages !== "off";
     const subKnoppen = sub
       ? '<span class="scheiding">&middot;</span>' +
-        '<button class="knop nav sub" data-sub="' + (d.prevSubPage || "") + '"' +
-        (d.prevSubPage ? "" : " disabled") + ' title="vorige subpagina">&#9664;</button>' +
-        '<span class="sublabel">sub ' + this._subNummer() + "</span>" +
-        '<button class="knop nav sub" data-sub="' + (d.nextSubPage || "") + '"' +
-        (d.nextSubPage ? "" : " disabled") + ' title="volgende subpagina">&#9654;</button>' +
+        '<button class="knop nav sub" data-sub="' +
+        (d.prevSubPage || "") +
+        '"' +
+        (d.prevSubPage ? "" : " disabled") +
+        ' title="vorige subpagina">&#9664;</button>' +
+        '<span class="sublabel">sub ' +
+        this._subNummer() +
+        "</span>" +
+        '<button class="knop nav sub" data-sub="' +
+        (d.nextSubPage || "") +
+        '"' +
+        (d.nextSubPage ? "" : " disabled") +
+        ' title="volgende subpagina">&#9654;</button>' +
         (draait
           ? '<button class="knop nav pauze" title="' +
-            (this._subPauze ? "subpagina&#39;s weer laten doorlopen" : "subpagina&#39;s stilzetten") +
-            '">' + (this._subPauze ? "&#9654;&#65038;" : "&#9208;&#65038;") + "</button>"
+            (this._subPauze
+              ? "subpagina&#39;s weer laten doorlopen"
+              : "subpagina&#39;s stilzetten") +
+            '">' +
+            (this._subPauze ? "&#9654;&#65038;" : "&#9208;&#65038;") +
+            "</button>"
           : "")
       : "";
 
@@ -429,8 +450,15 @@ class NosTeletekstKaart extends HTMLElement {
             const naam = f.naam || f.name || nr;
             const actief = nr === huidigeBasis ? " aan" : "";
             return (
-              '<button class="knop favknop' + actief + '" data-ga="' + nr +
-              '" title="pagina ' + nr + '">' + naam + "</button>"
+              '<button class="knop favknop' +
+              actief +
+              '" data-ga="' +
+              nr +
+              '" title="pagina ' +
+              nr +
+              '">' +
+              naam +
+              "</button>"
             );
           })
           .join("") +
@@ -440,12 +468,19 @@ class NosTeletekstKaart extends HTMLElement {
     this._balk.innerHTML =
       favRij +
       '<div class="rij">' +
-      '<button class="knop nav" data-ga="' + (d.prevPage || "") + '"' +
-      (d.prevPage ? "" : " disabled") + ' title="vorige pagina">&#9664;</button>' +
+      '<button class="knop nav" data-ga="' +
+      (d.prevPage || "") +
+      '"' +
+      (d.prevPage ? "" : " disabled") +
+      ' title="vorige pagina">&#9664;</button>' +
       '<input class="nummer" type="text" inputmode="numeric" maxlength="5" value="' +
-      this._pagina + '" aria-label="paginanummer">' +
-      '<button class="knop nav" data-ga="' + (d.nextPage || "") + '"' +
-      (d.nextPage ? "" : " disabled") + ' title="volgende pagina">&#9654;</button>' +
+      this._pagina +
+      '" aria-label="paginanummer">' +
+      '<button class="knop nav" data-ga="' +
+      (d.nextPage || "") +
+      '"' +
+      (d.nextPage ? "" : " disabled") +
+      ' title="volgende pagina">&#9654;</button>' +
       subKnoppen +
       "</div>" +
       '<div class="status"></div>';
@@ -475,9 +510,14 @@ class NosTeletekstKaart extends HTMLElement {
     const inv = this._balk.querySelector(".nummer");
     if (inv) {
       inv.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") { self.ga(inv.value); inv.blur(); }
+        if (e.key === "Enter") {
+          self.ga(inv.value);
+          inv.blur();
+        }
       });
-      inv.addEventListener("focus", function () { inv.select(); });
+      inv.addEventListener("focus", function () {
+        inv.select();
+      });
       // Op een aanraakscherm is er vaak geen toetsenbord: dan het cijferblok.
       inv.addEventListener("pointerdown", function (e) {
         if (e.pointerType === "touch") {
@@ -505,7 +545,9 @@ class NosTeletekstKaart extends HTMLElement {
     }
     const nu = new Date();
     const tijd =
-      String(nu.getHours()).padStart(2, "0") + ":" + String(nu.getMinutes()).padStart(2, "0");
+      String(nu.getHours()).padStart(2, "0") +
+      ":" +
+      String(nu.getMinutes()).padStart(2, "0");
     el.innerHTML = "pagina <b>" + this._pagina + "</b> &middot; bijgewerkt " + tijd;
   }
 
@@ -518,8 +560,10 @@ class NosTeletekstKaart extends HTMLElement {
     const namen = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "wis", "0", "sluit"];
     rij.innerHTML = namen
       .map(function (k) {
-        if (k === "wis") return '<button class="toets wis" data-toets="wis">&#9003;</button>';
-        if (k === "sluit") return '<button class="toets sluit" data-toets="sluit">&#10005;</button>';
+        if (k === "wis")
+          return '<button class="toets wis" data-toets="wis">&#9003;</button>';
+        if (k === "sluit")
+          return '<button class="toets sluit" data-toets="sluit">&#10005;</button>';
         return '<button class="toets" data-toets="' + k + '">' + k + "</button>";
       })
       .join("");
@@ -568,7 +612,8 @@ class NosTeletekstKaart extends HTMLElement {
 
   _toetsAanslag(e) {
     if (e.key >= "0" && e.key <= "9") {
-      if (this._toetsen && this._toetsen.classList.contains("verborgen")) this._openToetsen();
+      if (this._toetsen && this._toetsen.classList.contains("verborgen"))
+        this._openToetsen();
       this._cijfer(e.key);
       this._toonInvoer();
       return;
@@ -585,12 +630,20 @@ class NosTeletekstKaart extends HTMLElement {
   _swipeAan() {
     const el = this._scherm;
     if (!el) return;
-    let x0 = 0, y0 = 0, t0 = 0, bezig = false;
+    let x0 = 0,
+      y0 = 0,
+      t0 = 0,
+      bezig = false;
     const self = this;
     el.addEventListener("pointerdown", function (e) {
-      x0 = e.clientX; y0 = e.clientY; t0 = Date.now(); bezig = true;
+      x0 = e.clientX;
+      y0 = e.clientY;
+      t0 = Date.now();
+      bezig = true;
     });
-    el.addEventListener("pointercancel", function () { bezig = false; });
+    el.addEventListener("pointercancel", function () {
+      bezig = false;
+    });
     el.addEventListener("pointerup", function (e) {
       if (!bezig) return;
       bezig = false;
@@ -629,7 +682,9 @@ const KAART_SCHEMA = [
   { name: "page", selector: { text: {} } },
   {
     name: "refresh",
-    selector: { number: { min: 0, max: 3600, step: 10, mode: "box", unit_of_measurement: "s" } },
+    selector: {
+      number: { min: 0, max: 3600, step: 10, mode: "box", unit_of_measurement: "s" },
+    },
   },
   {
     name: "aspect",
@@ -658,12 +713,16 @@ const KAART_SCHEMA = [
   },
   {
     name: "subpage_seconds",
-    selector: { number: { min: 3, max: 60, step: 1, mode: "box", unit_of_measurement: "s" } },
+    selector: {
+      number: { min: 3, max: 60, step: 1, mode: "box", unit_of_measurement: "s" },
+    },
   },
   { name: "controls", selector: { boolean: {} } },
   {
     name: "max_height",
-    selector: { number: { min: 0, max: 2000, step: 10, mode: "box", unit_of_measurement: "px" } },
+    selector: {
+      number: { min: 0, max: 2000, step: 10, mode: "box", unit_of_measurement: "px" },
+    },
   },
 ];
 
@@ -695,7 +754,8 @@ const KOPPEN_SCHEMA = [
 
 const KOPPEN_LABELS = { entity: "Teletekst-sensor", titel: "Kop boven de lijst" };
 const KOPPEN_UITLEG = {
-  entity: "Kies een overzichtspagina, bijvoorbeeld 101 of 601. Alleen die hebben koppen.",
+  entity:
+    "Kies een overzichtspagina, bijvoorbeeld 101 of 601. Alleen die hebben koppen.",
   titel: "Laat leeg om de naam van de sensor te gebruiken.",
 };
 
@@ -861,27 +921,38 @@ class NosTeletekstKoppen extends HTMLElement {
     }
 
     const koppen = this._koppen();
-    const titel =
-      this._config.titel || s.attributes.friendly_name || "Teletekst";
+    const titel = this._config.titel || s.attributes.friendly_name || "Teletekst";
     const pagina = s.attributes.pagina || "";
 
     if (!koppen.length) {
       this._vak.innerHTML =
-        '<div class="lijst-kop"><h2>' + titel + "</h2></div>" +
+        '<div class="lijst-kop"><h2>' +
+        titel +
+        "</h2></div>" +
         '<div class="leeg">Deze pagina heeft geen koppen met een paginanummer. ' +
         "Kies een overzichtspagina, bijvoorbeeld 101 of 601.</div>";
       return;
     }
 
     this._vak.innerHTML =
-      '<div class="lijst-kop"><h2>' + titel + "</h2>" +
-      '<span class="bron">teletekst ' + pagina + "</span></div><ul>" +
+      '<div class="lijst-kop"><h2>' +
+      titel +
+      "</h2>" +
+      '<span class="bron">teletekst ' +
+      pagina +
+      "</span></div><ul>" +
       koppen
         .map(function (k, i) {
           return (
-            "<li><button class='kop' data-i='" + i + "'>" +
-            "<span class='nr'>" + k.pagina + "</span>" +
-            "<span class='titel'>" + k.tekst + "</span></button></li>"
+            "<li><button class='kop' data-i='" +
+            i +
+            "'>" +
+            "<span class='nr'>" +
+            k.pagina +
+            "</span>" +
+            "<span class='titel'>" +
+            k.tekst +
+            "</span></button></li>"
           );
         })
         .join("") +
@@ -910,7 +981,8 @@ class NosTeletekstKoppen extends HTMLElement {
       this._open.tekst = regels.join("\n");
     } catch (err) {
       this._open.tekst =
-        "Ophalen mislukte: " + ((err && err.body && err.body.fout) || err.message || err);
+        "Ophalen mislukte: " +
+        ((err && err.body && err.body.fout) || err.message || err);
     }
     this._tekenBericht();
   }
@@ -919,8 +991,12 @@ class NosTeletekstKoppen extends HTMLElement {
     const o = this._open;
     this._vak.innerHTML =
       '<button class="terug">&#8592; alle koppen</button>' +
-      '<div class="lijst-kop"><h2>' + o.kop.tekst + "</h2>" +
-      '<span class="bron">teletekst ' + o.kop.pagina + "</span></div>" +
+      '<div class="lijst-kop"><h2>' +
+      o.kop.tekst +
+      "</h2>" +
+      '<span class="bron">teletekst ' +
+      o.kop.pagina +
+      "</span></div>" +
       '<div class="bericht"></div>';
     this._vak.querySelector(".bericht").textContent = o.tekst;
     const self = this;

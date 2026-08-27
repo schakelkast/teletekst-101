@@ -92,6 +92,7 @@ def teken(content: str, hoogte: int = 500, breed: bool = True) -> bytes:
         hoogte: gewenste hoogte in beeldpunten.
         breed: op tv zijn de tekens breder dan op nos.nl. Met `True` wordt het
             beeld horizontaal opgerekt tot 4:3, net als de kaart doet.
+
     """
     from PIL import Image, ImageDraw, ImageFont
 
@@ -117,13 +118,16 @@ def teken(content: str, hoogte: int = 500, breed: bool = True) -> bytes:
                     [x, y, x + celbreedte - 1, y + celhoogte - 1], fill=achter
                 )
             if teken_ != " ":
-                tekenaar.text((x, y + opgaand), teken_, font=font, fill=voor, anchor="ls")
+                tekenaar.text(
+                    (x, y + opgaand), teken_, font=font, fill=voor, anchor="ls"
+                )
 
     if breed:
         # 40x25 tekens op een 4:3-beeld: de cel is dan 0,833 breed tegenover
         # hoog, terwijl het font 0,50 geeft.
         afbeelding = afbeelding.resize(
-            (round(afbeelding.height * 4 / 3), afbeelding.height), Image.LANCZOS
+            (round(afbeelding.height * 4 / 3), afbeelding.height),
+            Image.Resampling.LANCZOS,
         )
 
     uit = io.BytesIO()

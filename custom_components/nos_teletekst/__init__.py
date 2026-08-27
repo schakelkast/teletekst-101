@@ -44,10 +44,10 @@ from .const import (
     CONF_VERKEER,
     CONF_WEGEN,
     DIENST_PAGINA,
-    ENTITEIT_BEELD,
-    ENTITEIT_SENSOR,
     DIENST_ZOEK,
     DOMAIN,
+    ENTITEIT_BEELD,
+    ENTITEIT_SENSOR,
     FRONTEND_URL,
     KAART_BESTAND,
     MIN_INTERVAL,
@@ -183,7 +183,9 @@ def _ruim_oude_entiteiten_op(
     register = er.async_get(hass)
     for item in list(er.async_entries_for_config_entry(register, entry.entry_id)):
         if item.unique_id not in verwacht:
-            _LOGGER.debug("Entiteit %s hoort niet meer bij de instellingen", item.entity_id)
+            _LOGGER.debug(
+                "Entiteit %s hoort niet meer bij de instellingen", item.entity_id
+            )
             register.async_remove(item.entity_id)
 
 

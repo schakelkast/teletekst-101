@@ -59,7 +59,10 @@ class TeletekstSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
         """Koppel de sensor aan de pagina die de bijhouder ophaalt."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{entry.entry_id}_{coordinator.pagina}"
-        self._attr_name = f"Pagina {coordinator.pagina}"
+        # Naam via een vertaalsleutel, zodat een Engelse gebruiker "Page 101"
+        # ziet en niet "Pagina 101".
+        self._attr_translation_key = "pagina"
+        self._attr_translation_placeholders = {"pagina": coordinator.pagina}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             name="NOS Teletekst",
@@ -98,7 +101,7 @@ class VerkeerSensor(CoordinatorEntity[VerkeerCoordinator], SensorEntity):
 
     _attr_has_entity_name = True
     _attr_icon = "mdi:traffic-light"
-    _attr_name = "Verkeer"
+    _attr_translation_key = "verkeer"
     _attr_native_unit_of_measurement = "files"
     _attr_state_class = "measurement"
 

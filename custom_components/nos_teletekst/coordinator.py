@@ -13,7 +13,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from . import tekst, verkeer
 from .api import PaginaBestaatNiet, TeletekstFout, haal_pagina
 from .const import (
-    DOMAIN,
     EVENEMENT_GEWIJZIGD,
     VERKEER_MAX_SUB,
     VERKEER_PAGINA,
