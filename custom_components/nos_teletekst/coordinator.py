@@ -19,6 +19,9 @@ from .const import (
     VERKEER_PAGINA,
 )
 
+# Zoveel subpagina's halen we hooguit op voor een eigen sensor.
+SUB_MAX = 10
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,8 +34,15 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         config_entry: ConfigEntry,
         pagina: str,
         interval: int,
+        met_subpaginas: bool = False,
     ) -> None:
-        """Zet de bijhouder op voor één paginanummer."""
+        """Zet de bijhouder op voor één paginanummer.
+
+        `met_subpaginas` haalt ook de vervolgpagina's op. Dat is nodig zodra er
+        een eigen sensor op deze pagina zoekt: het weerrapport verdeelt de
+        plaatsen over vijf subpagina's, dus wie alleen de eerste ophaalt vindt
+        de helft niet.
+        """
         super().__init__(
             hass,
             _LOGGER,
@@ -41,6 +51,7 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=timedelta(seconds=interval),
         )
         self.pagina = pagina
+        self._met_subpaginas = met_subpaginas
         self._vorige_tekst: str | None = None
 
     async def _async_update_data(self) -> dict[str, Any]:
@@ -57,6 +68,21 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         inhoud = ruw.get("content") or ""
         plat = tekst.naar_tekst(inhoud)
 
+        # Regels om in te zoeken: standaard alleen deze pagina, en met
+        # subpagina's alles achter elkaar.
+        zoekregels = tekst.naar_regels(inhoud)
+        if self._met_subpaginas:
+            volgende = ruw.get("nextSubPage")
+            gezien = 0
+            while volgende and gezien < SUB_MAX:
+                try:
+                    extra = await haal_pagina(self.hass, volgende)
+                except TeletekstFout:
+                    break
+                zoekregels += tekst.naar_regels(extra.get("content") or "")
+                volgende = extra.get("nextSubPage")
+                gezien += 1
+
         data = {
             "pagina": self.pagina,
             # De tekenaar heeft de originele HTML nodig: daar zitten de kleuren
@@ -71,6 +97,7 @@ class PaginaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "koppen": tekst.koppen(inhoud),
             "koppen_markdown": tekst.koppen_markdown(inhoud),
             "tekst": plat,
+            "zoekregels": zoekregels,
             "verwijzingen": tekst.paginaverwijzingen(inhoud),
             "vorige_pagina": ruw.get("prevPage") or None,
             "volgende_pagina": ruw.get("nextPage") or None,

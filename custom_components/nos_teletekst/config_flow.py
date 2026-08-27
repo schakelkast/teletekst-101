@@ -374,11 +374,14 @@ class NosTeletekstOptionsFlow(OptionsFlow):
         if user_input is not None:
             plaats = str(user_input["plaats"]).strip()
             if plaats:
+                # Pagina 705 is het weerrapport: plaatsnaam op de ene regel,
+                # de meting op de volgende. Vandaar een regel verder.
                 nieuw = {
                     "naam": f"Temperatuur {plaats}",
-                    "pagina": "702",
+                    "pagina": "705",
                     "manier": MANIER_ZOEK,
                     "zoekwoord": plaats,
+                    "verder": 1,
                     "regel": 1,
                     "alleen_getal": True,
                     "eenheid": "°C",
@@ -394,7 +397,7 @@ class NosTeletekstOptionsFlow(OptionsFlow):
         return self.async_show_form(
             step_id="snel_weer",
             data_schema=vol.Schema(
-                {vol.Required("plaats", default="De Bilt"): selector.TextSelector()}
+                {vol.Required("plaats", default="Eelde"): selector.TextSelector()}
             ),
         )
 
@@ -421,6 +424,7 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                     "manier": user_input["manier"],
                     "regel": int(user_input.get("regel") or 1),
                     "zoekwoord": str(user_input.get("zoekwoord") or "").strip(),
+                    "verder": int(user_input.get("verder") or 0),
                     "alleen_getal": bool(user_input.get("alleen_getal")),
                     "eenheid": str(user_input.get("eenheid") or "").strip(),
                 }
@@ -452,6 +456,9 @@ class NosTeletekstOptionsFlow(OptionsFlow):
                     )
                 ),
                 vol.Optional("zoekwoord", default=""): selector.TextSelector(),
+                vol.Optional("verder", default=0): selector.NumberSelector(
+                    selector.NumberSelectorConfig(min=0, max=5, step=1, mode="box")
+                ),
                 vol.Optional("regel", default=1): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=1, max=25, step=1, mode="box")
                 ),

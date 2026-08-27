@@ -1,5 +1,17 @@
 # Wat er veranderd is
 
+## 1.8.0
+
+- **Aantal regels verder** bij een eigen sensor. Teletekst zet de waarde vaak
+  onder het kopje: op het weerrapport staat de temperatuur een regel onder de
+  plaatsnaam. Zonder springen vond je de plaatsnaam en dus geen getal.
+- **Subpagina's worden meegenomen** bij het zoeken. Het weerrapport verdeelt de
+  plaatsen over vijf subpagina's; wie alleen de eerste ophaalde, vond de helft
+  niet.
+- **Opgelost:** de voorkeuze "temperatuur bij mij in de buurt" wees naar pagina
+  702, maar dat is een weerkaart met losse getallen zonder plaatsnamen. Hij
+  gebruikt nu pagina 705, het weerrapport.
+
 ## 1.7.2
 
 - **Opgelost:** "Eigen sensor verwijderen" gaf een serverfout. Er ontbrak een

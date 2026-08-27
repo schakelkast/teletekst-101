@@ -281,8 +281,13 @@ temperatuur in De Bilt, een waterstand, de stand van je club. Bij
 
 Je kiest een pagina en hoe de regel gevonden moet worden:
 
-- **de eerste regel met een woord erin** — bijvoorbeeld `De Bilt` op pagina 702
+- **de eerste regel met een woord erin** — bijvoorbeeld `Eelde` op pagina 705
 - **een vast regelnummer** — regel 1 is de bovenste rij van de pagina
+
+Teletekst zet de waarde vaak *onder* het kopje. Op het weerrapport staat de
+plaatsnaam op de ene regel en de temperatuur op de volgende, dus vul je bij
+"aantal regels verder" een 1 in. Bij zoeken worden ook de subpagina's
+doorzocht, want dat weerrapport loopt over vijf pagina's.
 
 Daarna kun je aanvinken dat je alleen het eerste getal van die regel wilt, met
 een eenheid erbij. Dan krijg je een gewone getalsensor waar je grafieken van kunt

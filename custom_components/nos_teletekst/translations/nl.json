@@ -59,14 +59,16 @@
           "zoekwoord": "Woord om op te zoeken",
           "regel": "Regelnummer",
           "alleen_getal": "Alleen het eerste getal uit de regel",
-          "eenheid": "Eenheid"
+          "eenheid": "Eenheid",
+          "verder": "Aantal regels verder"
         },
         "data_description": {
           "naam": "Zo heet de sensor straks.",
           "pagina": "Hoeft geen pagina te zijn die je al volgt; hij wordt dan vanzelf opgehaald.",
           "zoekwoord": "Alleen nodig als je op een woord zoekt.",
           "regel": "Alleen nodig bij een vast regelnummer. Regel 1 is de bovenste.",
-          "eenheid": "Bijvoorbeeld °C of km. Laat leeg als het geen getal is."
+          "eenheid": "Bijvoorbeeld °C of km. Laat leeg als het geen getal is.",
+          "verder": "Teletekst zet de waarde vaak op de regel onder het kopje. Bij het weerrapport staat de temperatuur een regel onder de plaatsnaam, dus vul daar 1 in."
         }
       },
       "sensor_verwijderen": {
@@ -110,7 +112,7 @@
       },
       "snel_weer": {
         "title": "Van welke plaats wil je de temperatuur?",
-        "description": "Er wordt gezocht op deze plaatsnaam in het weerbericht van pagina 702, en het eerste getal van die regel wordt de waarde.",
+        "description": "Er wordt op deze plaatsnaam gezocht in het weerrapport (pagina 705); de temperatuur staat op de regel eronder. Gebruik een weerstation: Eelde, De Bilt, Schiphol, Maastricht, Vlissingen.",
         "data": {
           "plaats": "Plaats"
         }

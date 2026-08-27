@@ -110,12 +110,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         MIN_INTERVAL, int(entry.options.get(CONF_INTERVAL, STANDAARD_INTERVAL))
     )
 
+    # Zoekt een eigen sensor op deze pagina, dan moeten de subpagina's mee.
+    zoekpaginas = {
+        str(d.get("pagina"))
+        for d in entry.options.get(CONF_EIGEN) or []
+        if d.get("manier") != "regel"
+    }
+
     coordinators: dict[str, PaginaCoordinator] = {}
     for pagina in paginas:
         if not geldige_pagina(str(pagina)):
             _LOGGER.warning("Paginanummer %s overgeslagen: ongeldig", pagina)
             continue
-        c = PaginaCoordinator(hass, entry, str(pagina), interval)
+        c = PaginaCoordinator(
+            hass, entry, str(pagina), interval, str(pagina) in zoekpaginas
+        )
         await c.async_config_entry_first_refresh()
         coordinators[str(pagina)] = c
 

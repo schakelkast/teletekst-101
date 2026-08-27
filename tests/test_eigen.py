@@ -73,3 +73,32 @@ def test_regelnummer_telt_ook_lege_regels_mee():
     met_leeg = ["A", "B", "", "C"]
     assert eigen.lees(met_leeg, {"manier": "regel", "regel": 3}) == ""
     assert eigen.lees(met_leeg, {"manier": "regel", "regel": 4}) == "C"
+
+
+WEERRAPPORT = [
+    "W E E R          NEDERLAND 11:40 uur",
+    "Terschelling",
+    "droog           20    O  7  >10km  1012",
+    "Eelde",
+    "sluierwolken    22    O  6  >10km  1012",
+]
+
+
+def test_regels_verder_springen():
+    """Teletekst zet vaak een kopje boven de waarde.
+
+    Op het weerrapport staat de plaatsnaam op de ene regel en de temperatuur op
+    de volgende. Zonder springen vind je de plaatsnaam en dus geen getal.
+    """
+    d = {"manier": "zoek", "zoekwoord": "Eelde", "verder": 1, "alleen_getal": True}
+    assert eigen.lees(WEERRAPPORT, d) == 22
+
+
+def test_zonder_springen_geen_getal():
+    d = {"manier": "zoek", "zoekwoord": "Eelde", "alleen_getal": True}
+    assert eigen.lees(WEERRAPPORT, d) is None
+
+
+def test_te_ver_springen_geeft_niets():
+    d = {"manier": "zoek", "zoekwoord": "Eelde", "verder": 50}
+    assert eigen.lees(WEERRAPPORT, d) is None

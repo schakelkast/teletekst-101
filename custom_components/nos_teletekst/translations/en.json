@@ -59,14 +59,16 @@
           "zoekwoord": "Word to look for",
           "regel": "Line number",
           "alleen_getal": "Only the first number on the line",
-          "eenheid": "Unit"
+          "eenheid": "Unit",
+          "verder": "Lines further down"
         },
         "data_description": {
           "naam": "This becomes the sensor name.",
           "pagina": "It does not have to be a page you already follow; it will be fetched.",
           "zoekwoord": "Only needed when searching for a word.",
           "regel": "Only needed for a fixed line number. Line 1 is the top one.",
-          "eenheid": "For example °C or km. Leave empty if it is not a number."
+          "eenheid": "For example °C or km. Leave empty if it is not a number.",
+          "verder": "Teletext often puts the value on the line below the label. On the weather report the temperature sits one line under the place name, so enter 1 there."
         }
       },
       "sensor_verwijderen": {
@@ -110,7 +112,7 @@
       },
       "snel_weer": {
         "title": "Temperature of which place?",
-        "description": "The weather page 702 is searched for this place name, and the first number on that line becomes the value.",
+        "description": "This place name is looked up in the weather report (page 705); the temperature is on the line below. Use a weather station: Eelde, De Bilt, Schiphol, Maastricht, Vlissingen.",
         "data": {
           "plaats": "Place"
         }

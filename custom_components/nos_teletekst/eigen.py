@@ -10,6 +10,10 @@ Twee manieren, allebei zonder dat je iets van sjablonen hoeft te weten:
 - **regel**: neem regel 5 van de pagina.
 - **zoek**: neem de eerste regel waar een woord in staat.
 
+Bij zoeken kun je een aantal regels verder springen. Dat is nodig omdat
+teletekst vaak eerst een kopje zet en de waarde eronder: op het weerrapport
+staat de plaatsnaam op de ene regel en de temperatuur op de volgende.
+
 Van die regel kun je de hele tekst nemen, of alleen het eerste getal.
 """
 
@@ -39,9 +43,11 @@ def zoek_regel(regels: list[str], definitie: dict[str, Any]) -> str | None:
     woord = str(definitie.get("zoekwoord") or "").lower()
     if not woord:
         return None
-    for regel in regels:
+    verder = int(definitie.get("verder") or 0)
+    for i, regel in enumerate(regels):
         if woord in regel.lower():
-            return regel
+            doel = i + verder
+            return regels[doel] if 0 <= doel < len(regels) else None
     return None
 
 

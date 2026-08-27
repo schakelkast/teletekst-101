@@ -176,7 +176,7 @@ class EigenSensor(CoordinatorEntity[PaginaCoordinator], SensorEntity):
         data = self.coordinator.data or {}
         if self._definitie.get("manier") == eigen.MANIER_REGEL:
             return data.get("alle_regels", [])
-        return data.get("regels", [])
+        return data.get("zoekregels") or data.get("regels", [])
 
     @property
     def native_value(self) -> str | float | None:
